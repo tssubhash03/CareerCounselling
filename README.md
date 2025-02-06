@@ -1,8 +1,6 @@
 ### **Objective**  
 The objective of this project is to develop a **Career Counselling and Guidance Platform** using the **MERN stack** to help students explore career options, receive personalized recommendations, connect with mentors, and access career-related resources.  
 
----
-
 ## **Project Structure**  
 
 ### **1. Pages & Navigation**  
