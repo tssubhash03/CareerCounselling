@@ -60,4 +60,4 @@ The objective of this project is to develop a **Career Counselling and Guidance 
 2. **Build the Career Exploration page (fetching careers from MongoDB)**.  
 3. **Develop the Mentorship module (connecting students with mentors)**.  
 4. **Integrate AI-based career recommendations (optional, using OpenAI or TensorFlow.js)**.  
-5. **Deploy the platform and gather user feedback**.  
+5. **Deploy the platform and gather user feedback**. 
