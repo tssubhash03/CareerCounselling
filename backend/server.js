@@ -4,11 +4,15 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 
 dotenv.config();
-connectDB(); // Connect to MongoDB
+connectDB();
 
 const app = express();
-app.use(express.json()); // Allow send and receive the JSON data.
-app.use(cors()); // Permission receive the data from FRONT END
+app.use(express.json());
+app.use(cors());
+
+// Import Routes
+const authRoutes = require("./routes/authRoutes");
+app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");
