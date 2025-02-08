@@ -14,6 +14,9 @@ app.use(cors());
 const authRoutes = require("./routes/authRoutes");
 app.use("/api/auth", authRoutes);
 
+const profileRoutes = require("./routes/profileRoutes");
+app.use("/api/profile", profileRoutes);
+
 const mentorRoutes = require("./routes/mentorRoutes");
 app.use("/api/mentors", mentorRoutes);
 
