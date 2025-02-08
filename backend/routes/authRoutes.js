@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/User");
 const Mentor = require("../models/Mentor");
+const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -81,6 +82,17 @@ router.post("/login", asyncHandler(async (req, res) => {
     res.status(401);
     throw new Error("Invalid email or password");
   }
+}));
+
+router.get("/profile", protect, asyncHandler(async (req, res) => {
+  res.json({
+    _id: req.user.id,
+    name: req.user.name,
+    email: req.user.email,
+    role: req.user.expertise ? "mentor" : "student",
+    interests: req.user.interests || [],
+    expertise: req.user.expertise || [],
+  });
 }));
 
 module.exports = router;

@@ -14,6 +14,9 @@ app.use(cors());
 const authRoutes = require("./routes/authRoutes");
 app.use("/api/auth", authRoutes);
 
+const mentorRoutes = require("./routes/mentorRoutes");
+app.use("/api/mentors", mentorRoutes);
+
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
