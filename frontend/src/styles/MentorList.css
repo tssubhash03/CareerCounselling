@@ -1,0 +1,32 @@
+.mentor-list {
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  .mentor-list h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .mentor-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .mentor-list li {
+    border: 1px solid #ddd;
+    margin: 10px 0;
+    padding: 15px;
+    background-color: white;
+    border-radius: 5px;
+  }
+  
+  .mentor-list li h3 {
+    margin: 0;
+    font-size: 1.2em;
+  }
+  
+  .mentor-list li p {
+    margin: 5px 0;
+  }
+  

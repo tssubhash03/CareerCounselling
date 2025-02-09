@@ -5,6 +5,16 @@ const { protect } = require("../middleware/authMiddleware");
 const asyncHandler = require("express-async-handler");
 
 // 🔹 API: Get Recommended Mentors Based on Student Interests
+router.get("/all", async (req, res) => {
+  try {
+    const mentors = await Mentor.find(); // Fetch all mentors from DB
+    res.json(mentors);
+  } catch (error) {
+    console.error("Error fetching mentors:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 router.get("/recommend", protect, asyncHandler(async (req, res) => {
   if (!req.user.interests || req.user.interests.length === 0) {
     res.status(400);
@@ -18,6 +28,20 @@ router.get("/recommend", protect, asyncHandler(async (req, res) => {
 
   res.json(mentors);
 }));
+
+// Specific Mentor Details
+router.get("/:id", async (req, res) => {
+  try {
+    const mentor = await Mentor.findById(req.params.id); // Find mentor by ID
+    if (!mentor) {
+      return res.status(404).json({ message: "Mentor not found" });
+    }
+    res.json(mentor);
+  } catch (error) {
+    console.error("Error fetching mentor:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 // 🔹 API: Add a Review to a Mentor
 router.post("/:id/review", protect, asyncHandler(async (req, res) => {
