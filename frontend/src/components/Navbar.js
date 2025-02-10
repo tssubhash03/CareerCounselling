@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
+import React from "react";
+// import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+
   return (
     <nav style={styles.navbar}>
       <h2 style={styles.logo}>Career Counselling</h2>
