@@ -17,6 +17,8 @@ app.use("/api/auth", authRoutes);
 const profileRoutes = require("./routes/profileRoutes");
 app.use("/api/profile", profileRoutes);
 
+app.use("/uploads", express.static("uploads"));
+
 const mentorRoutes = require("./routes/mentorRoutes");
 app.use("/api/mentors", mentorRoutes);
 

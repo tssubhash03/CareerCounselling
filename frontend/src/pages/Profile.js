@@ -1,20 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { Button, Container, Card } from "react-bootstrap";
-import { FaPencilAlt } from "react-icons/fa";
+import React, { useState, useEffect, useRef } from "react";
+import { Button, Container, Card, Image } from "react-bootstrap";
+import { FaPencilAlt } from "react-icons/fa"; 
+import axios from "axios";
 import AuthModal from "../components/AuthModal";
 
 const Profile = () => {
   const [showModal, setShowModal] = useState(false);
   const [user, setUser] = useState(null);
-  const [profilePic, setProfilePic] = useState(null);
+  const [profilePic, setProfilePic] = useState(""); 
+  const [file, setFile] = useState(null); // Store the selected file
+  const fileInputRef = useRef(null); // Reference to hidden file input
 
   useEffect(() => {
     const updateUser = () => {
       const storedUser = localStorage.getItem("userInfo");
       if (storedUser) {
-        const userData = JSON.parse(storedUser);
-        setUser(userData);
-        setProfilePic(userData.profilePic || "/default-profile.png");
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+        setProfilePic(parsedUser.profilePic || "/default-avatar.png");
       } else {
         setUser(null);
       }
@@ -22,7 +25,6 @@ const Profile = () => {
 
     updateUser();
     window.addEventListener("storage", updateUser);
-
     return () => {
       window.removeEventListener("storage", updateUser);
     };
@@ -33,12 +35,41 @@ const Profile = () => {
     setUser(null);
   };
 
-  const handleUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setProfilePic(imageUrl);
-      // Here, you should send the image to the backend for permanent storage
+  const handleProfilePicClick = () => {
+    fileInputRef.current.click(); // Open file picker
+  };
+
+  const handleProfilePicChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile); // Store selected file
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) {
+      alert("Please select a file first.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("profilePic", file);
+
+    try {
+      const token = JSON.parse(localStorage.getItem("userInfo")).token;
+      const { data } = await axios.put("http://localhost:5000/api/profile/upload-profile-pic", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setProfilePic(data.profilePic);
+      const updatedUser = { ...user, profilePic: data.profilePic };
+      setUser(updatedUser);
+      localStorage.setItem("userInfo", JSON.stringify(updatedUser));
+    } catch (error) {
+      console.error("Profile picture upload failed:", error);
     }
   };
 
@@ -48,29 +79,22 @@ const Profile = () => {
         {user ? (
           <>
             <div className="position-relative d-inline-block">
-              {/* Profile Image */}
-              <img
-                src={profilePic}
-                alt="Profile"
-                className="rounded-circle border"
-                style={{ width: "120px", height: "120px", objectFit: "cover" }}
+              <Image src={`http://localhost:5000${profilePic}`} roundedCircle width={120} height={120} />
+              
+              {/* Pencil Icon to open file explorer */}
+              <FaPencilAlt
+                className="position-absolute bottom-0 end-0 bg-light p-1 rounded-circle"
+                style={{ cursor: "pointer" }}
+                onClick={handleProfilePicClick}
               />
               
-              {/* Pencil Icon for Upload */}
-              <label
-                htmlFor="upload-input"
-                className="position-absolute"
-                style={{ bottom: 0, right: 0, cursor: "pointer" }}
-              >
-                <FaPencilAlt className="text-primary bg-white p-1 rounded-circle shadow" style={{ fontSize: "18px" }} />
-              </label>
-              <input
-                type="file"
-                id="upload-input"
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={handleUpload}
-              />
+              {/* Hidden File Input */}
+              <input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleProfilePicChange} />
+              
+              {/* Upload Button to send the file to backend */}
+              <button className="btn btn-primary mt-2" onClick={handleUpload}>
+                Upload
+              </button>
             </div>
 
             <h2 className="mt-3">{user.name}</h2>
@@ -79,20 +103,14 @@ const Profile = () => {
             {user.interests && <p>Interests: {user.interests}</p>}
             {user.expertise && <p>Expertise: {user.expertise}</p>}
 
-            <div className="d-flex justify-content-center mt-3">
-  <Button variant="success" size="lg" className="mx-4" onClick={handleUpload}>
-    Upload
-  </Button>
-  <Button variant="danger" size="lg" className="mx-4" onClick={handleLogout}>
-    Logout
-  </Button>
-</div>
-
+            <Button variant="danger" onClick={handleLogout}>
+              Logout
+            </Button>
           </>
         ) : (
           <>
             <h2>Login or Sign Up to View Profile</h2>
-            <Button variant="primary" size="lg" className="mx-2"onClick={() => setShowModal(true)}>
+            <Button variant="primary" onClick={() => setShowModal(true)}>
               Login / Sign Up
             </Button>
           </>

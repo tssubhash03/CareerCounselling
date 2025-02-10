@@ -4,6 +4,8 @@ const User = require("../models/User");
 const Mentor = require("../models/Mentor");
 const { protect } = require("../middleware/authMiddleware");
 const asyncHandler = require("express-async-handler");
+const multer = require("multer");
+const path = require("path");
 
 // 🔹 Get Student Profile
 router.get("/user", protect, asyncHandler(async (req, res) => {
@@ -57,6 +59,44 @@ router.put("/mentor/:id", protect, asyncHandler(async (req, res) => {
 
   const updatedMentor = await mentor.save();
   res.json(updatedMentor);
+
+  const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Store images in the 'uploads' folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`); // Unique filename
+  },
+});
+
+const upload = multer({ storage });
+
+// 🔹 API Route: Upload Profile Picture
+router.put("/upload-profile-pic", protect, upload.single("profilePic"), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  const imagePath = `/uploads/${req.file.filename}`; // Store image path
+
+  // Update user or mentor profile
+  const user = await User.findById(req.user._id);
+  if (user) {
+    user.profilePic = imagePath;
+    await user.save();
+    return res.json({ message: "Profile picture updated", profilePic: imagePath });
+  }
+
+  const mentor = await Mentor.findById(req.user._id);
+  if (mentor) {
+    mentor.profilePic = imagePath;
+    await mentor.save();
+    return res.json({ message: "Profile picture updated", profilePic: imagePath });
+  }
+
+  res.status(404).json({ message: "User not found" });
+});
+
 }));
 
 module.exports = router;
