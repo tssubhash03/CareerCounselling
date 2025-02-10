@@ -7,6 +7,19 @@ const asyncHandler = require("express-async-handler");
 const multer = require("multer");
 const path = require("path");
 
+// Setup multer storage outside the route
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(__dirname, "../uploads");
+    cb(null, uploadPath); // Store images in the 'uploads' folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`); // Unique filename
+  },
+});
+
+const upload = multer({ storage });
+
 // 🔹 Get Student Profile
 router.get("/user", protect, asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id).select("-password");
@@ -59,17 +72,7 @@ router.put("/mentor/:id", protect, asyncHandler(async (req, res) => {
 
   const updatedMentor = await mentor.save();
   res.json(updatedMentor);
-
-  const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Store images in the 'uploads' folder
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`); // Unique filename
-  },
-});
-
-const upload = multer({ storage });
+}));
 
 // 🔹 API Route: Upload Profile Picture
 router.put("/upload-profile-pic", protect, upload.single("profilePic"), async (req, res) => {
@@ -79,7 +82,7 @@ router.put("/upload-profile-pic", protect, upload.single("profilePic"), async (r
 
   const imagePath = `/uploads/${req.file.filename}`; // Store image path
 
-  // Update user or mentor profile
+  // Update user profile
   const user = await User.findById(req.user._id);
   if (user) {
     user.profilePic = imagePath;
@@ -87,6 +90,7 @@ router.put("/upload-profile-pic", protect, upload.single("profilePic"), async (r
     return res.json({ message: "Profile picture updated", profilePic: imagePath });
   }
 
+  // Update mentor profile
   const mentor = await Mentor.findById(req.user._id);
   if (mentor) {
     mentor.profilePic = imagePath;
@@ -94,9 +98,7 @@ router.put("/upload-profile-pic", protect, upload.single("profilePic"), async (r
     return res.json({ message: "Profile picture updated", profilePic: imagePath });
   }
 
-  res.status(404).json({ message: "User not found" });
+  res.status(404).json({ message: "User or Mentor not found" });
 });
-
-}));
 
 module.exports = router;
