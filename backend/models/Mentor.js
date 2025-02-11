@@ -7,8 +7,9 @@ const mentorSchema = new mongoose.Schema(
     password: { type: String, required: true },
     expertise: [{ type: String, required: true }], // Example: ["AI", "Cybersecurity"]
     experience: { type: Number, required: true }, // Years of experience
-    bio: { type: String, default: "" }, // Short bio about mentor
+    about: { type: String, default: "" }, // Short bio (previously 'bio')
     profilePic: { type: String, default: "" }, // Profile picture URL
+    videoLink: { type: String, default: "" }, // Mentor's introduction video link
 
     reviews: [
       {

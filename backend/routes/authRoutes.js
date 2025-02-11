@@ -13,86 +13,112 @@ const generateToken = (id, role) => {
   return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
 
-// User Registration (Signup)
-router.post("/signup", asyncHandler(async (req, res) => {
-  const { name, email, password, role, interests, expertise, experience } = req.body;
+// User/Mentor Registration (Signup)
+router.post(
+  "/signup",
+  asyncHandler(async (req, res) => {
+    const { name, email, password, role, interests, expertise, experience, about ,videoLink} = req.body;
 
-  // Check if user/mentor exists
-  const userExists = await User.findOne({ email });
-  const mentorExists = await Mentor.findOne({ email });
+    // Check if user/mentor exists
+    const userExists = await User.findOne({ email });
+    const mentorExists = await Mentor.findOne({ email });
 
-  if (userExists || mentorExists) {
-    res.status(400);
-    throw new Error("User already exists");
-  }
+    if (userExists || mentorExists) {
+      res.status(400);
+      throw new Error("User already exists");
+    }
 
-  // Hash password
-  const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  let newUser;
-  if (role === "mentor") {
-    newUser = await Mentor.create({
-      name,
-      email,
-      password: hashedPassword,
-      expertise,
-      experience,
-    });
-  } else {
-    newUser = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      interests,
-    });
-  }
+    let newUser;
+    if (role === "mentor") {
+      newUser = await Mentor.create({
+        name,
+        email,
+        password: hashedPassword,
+        expertise,
+        experience,
+        about,
+        videoLink, // Include about for mentors
+      });
+    } else {
+      newUser = await User.create({
+        name,
+        email,
+        password: hashedPassword,
+        interests,
+        about, // Include about for users
+      });
+    }
 
-  if (newUser) {
-    res.status(201).json({
-      _id: newUser.id,
-      name: newUser.name,
-      email: newUser.email,
-      role,
-      token: generateToken(newUser.id, role),
-    });
-  } else {
-    res.status(400);
-    throw new Error("Invalid user data");
-  }
-}));
+    if (newUser) {
+      res.status(201).json({
+        _id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        role,
+        about: newUser.about,
+        videoLink:newUser.videoLink, // Send about field in response
+        token: generateToken(newUser.id, role),
+      });
+    } else {
+      res.status(400);
+      throw new Error("Invalid user data");
+    }
+  })
+);
 
-// User Login
-router.post("/login", asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+// User/Mentor Login
+router.post(
+  "/login",
+  asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
-  const mentor = await Mentor.findOne({ email });
+    const user = await User.findOne({ email });
+    const mentor = await Mentor.findOne({ email });
 
-  const account = user || mentor;
+    const account = user || mentor;
 
-  if (account && (await bcrypt.compare(password, account.password))) {
+    if (account && (await bcrypt.compare(password, account.password))) {
+      const response = {
+        _id: account.id,
+        name: account.name,
+        email: account.email,
+        role: user ? "student" : "mentor",
+        about: account.about, // Include about field in login response
+        token: generateToken(account.id, user ? "student" : "mentor"),
+      };
+
+      // Only include videoLink for mentors
+      if (mentor) {
+        response.videoLink = mentor.videoLink || ""; // Include videoLink for mentors
+      }
+
+      res.json(response);
+    } else {
+      res.status(401);
+      throw new Error("Invalid email or password");
+    }
+  })
+);
+
+
+// Get User/Mentor Profile
+router.get(
+  "/profile",
+  protect,
+  asyncHandler(async (req, res) => {
     res.json({
-      _id: account.id,
-      name: account.name,
-      email: account.email,
-      role: user ? "student" : "mentor",
-      token: generateToken(account.id, user ? "student" : "mentor"),
+      _id: req.user.id,
+      name: req.user.name,
+      email: req.user.email,
+      role: req.user.expertise ? "mentor" : "student",
+      interests: req.user.interests || [],
+      expertise: req.user.expertise || [],
+      about: req.user.about || "", // Include about field in profile response
     });
-  } else {
-    res.status(401);
-    throw new Error("Invalid email or password");
-  }
-}));
-
-router.get("/profile", protect, asyncHandler(async (req, res) => {
-  res.json({
-    _id: req.user.id,
-    name: req.user.name,
-    email: req.user.email,
-    role: req.user.expertise ? "mentor" : "student",
-    interests: req.user.interests || [],
-    expertise: req.user.expertise || [],
-  });
-}));
+  })
+);
 
 module.exports = router;
