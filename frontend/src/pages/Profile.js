@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Button, Container, Card, Image } from "react-bootstrap";
-import { FaPencilAlt } from "react-icons/fa"; 
+import { Button, Container, Card, Image, InputGroup, FormControl } from "react-bootstrap";
+import { FaPencilAlt, FaCopy } from "react-icons/fa";
 import axios from "axios";
 import AuthModal from "../components/AuthModal";
 
 const Profile = () => {
   const [showModal, setShowModal] = useState(false);
   const [user, setUser] = useState(null);
-  const [profilePic, setProfilePic] = useState(""); 
-  const [file, setFile] = useState(null); // Store the selected file
-  const fileInputRef = useRef(null); // Reference to hidden file input
+  const [profilePic, setProfilePic] = useState("");
+  const [file, setFile] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     const updateUser = () => {
@@ -20,6 +20,7 @@ const Profile = () => {
         setProfilePic(parsedUser.profilePic || "/default-avatar.png");
       } else {
         setUser(null);
+        setShowModal(true); // Open login/signup modal automatically
       }
     };
 
@@ -33,16 +34,17 @@ const Profile = () => {
   const handleLogout = () => {
     localStorage.removeItem("userInfo");
     setUser(null);
+    setShowModal(true); // Show login/signup modal after logout
   };
 
   const handleProfilePicClick = () => {
-    fileInputRef.current.click(); // Open file picker
+    fileInputRef.current.click();
   };
 
   const handleProfilePicChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
-      setFile(selectedFile); // Store selected file
+      setFile(selectedFile);
     }
   };
 
@@ -73,52 +75,81 @@ const Profile = () => {
     }
   };
 
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText(user.email);
+    alert("Email copied!");
+  };
+
   return (
-    <Container className="mt-5">
-      <Card className="p-4 shadow-lg text-center">
+    <div style={{ backgroundColor: "#6C63FF", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <Container className="d-flex justify-content-center">
         {user ? (
-          <>
-            <div className="position-relative d-inline-block">
-              <Image src={`http://localhost:5000${profilePic}`} roundedCircle width={120} height={120} />
-              
-              {/* Pencil Icon to open file explorer */}
-              <FaPencilAlt
-                className="position-absolute bottom-0 end-0 bg-light p-1 rounded-circle"
-                style={{ cursor: "pointer" }}
-                onClick={handleProfilePicClick}
-              />
-              
-              {/* Hidden File Input */}
-              <input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleProfilePicChange} />
-              
-              {/* Upload Button to send the file to backend */}
-              <button className="btn btn-primary mt-2" onClick={handleUpload}>
-                Upload
-              </button>
-            </div>
-
-            <h2 className="mt-3">{user.name}</h2>
-            <p>Email: {user.email}</p>
-            <p>Role: {user.role}</p>
-            {user.interests && <p>Interests: {user.interests}</p>}
-            {user.expertise && <p>Expertise: {user.expertise}</p>}
-
-            <Button variant="danger" onClick={handleLogout}>
+          <Card className="shadow-lg p-5 position-relative d-flex flex-row align-items-center" style={{ width: "100%", maxWidth: "1100px", borderRadius: "20px" }}>
+            
+            {/* Logout button in top-right corner */}
+            <Button
+              variant="danger"
+              size="sm"
+              className="position-absolute"
+              style={{ top: "10px", right: "10px", borderRadius: "50%" }}
+              onClick={handleLogout}
+            >
               Logout
             </Button>
-          </>
-        ) : (
-          <>
-            <h2>Login or Sign Up to View Profile</h2>
-            <Button variant="primary" onClick={() => setShowModal(true)}>
-              Login / Sign Up
-            </Button>
-          </>
-        )}
-      </Card>
 
-      <AuthModal show={showModal} handleClose={() => setShowModal(false)} />
-    </Container>
+            {/* Profile Picture - Fixed Position */}
+            <div className="position-relative" style={{ marginRight: "20px" }}>
+              <Image
+                src={`http://localhost:5000${profilePic}`}
+                roundedCircle
+                width={300}
+                height={300}
+                className="border border-3 border-white shadow profile-pic-hover"
+              />
+              
+              {/* Upload & Edit Buttons below the profile pic */}
+              <div className="mt-2 text-center">
+                <Button variant="primary" size="sm" className="me-2 profile-btn-hover" onClick={handleUpload} style={{ borderRadius: "20px" }}>
+                  Upload
+                </Button>
+                <Button variant="secondary" size="sm" className="profile-btn-hover" onClick={handleProfilePicClick} style={{ borderRadius: "20px" }}>
+                  <FaPencilAlt />
+                </Button>
+                <input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleProfilePicChange} />
+              </div>
+            </div>
+
+            {/* User Info Section - Next to Profile Picture */}
+            <div className="text-start" style={{ flex: 1 }}>
+              {/* User Name */}
+              <h2 style={{ fontSize: "2.5rem", fontWeight: "700", fontFamily: "'Poppins', sans-serif", marginBottom: "8px" }}>
+                {user.name}
+              </h2>
+
+              {/* Email with Copy Button */}
+              <InputGroup className="mb-3" style={{ maxWidth: "400px" }}>
+                <FormControl
+                  value={user.email}
+                  readOnly
+                  style={{ fontSize: "1.2rem", fontWeight: "400", backgroundColor: "#fff" }}
+                />
+                <Button variant="outline-secondary" onClick={handleCopyEmail}>
+                  <FaCopy />
+                </Button>
+              </InputGroup>
+
+              {/* User Additional Info */}
+              <p style={{ fontSize: "1.1rem" }}>Role: {user.role}</p>
+              {user.interests && <p style={{ fontSize: "1.1rem" }}>Interests: {user.interests}</p>}
+              {user.expertise && <p style={{ fontSize: "1.1rem" }}>Expertise: {user.expertise}</p>}
+            </div>
+          </Card>
+        ) : null}
+
+        {/* Auth Modal is always open if user is not logged in */}
+        <AuthModal show={showModal} handleClose={() => setShowModal(false)} />
+      </Container>
+    </div>
   );
 };
 
