@@ -10,7 +10,8 @@ const Profile = () => {
   const [profilePic, setProfilePic] = useState("");
   const [file, setFile] = useState(null);
   const fileInputRef = useRef(null);
-
+  const [editingVideo, setEditingVideo] = useState(false);
+  const [videoLink, setVideoLink] = useState("");
   useEffect(() => {
     const updateUser = () => {
       const storedUser = localStorage.getItem("userInfo");
@@ -54,6 +55,7 @@ const Profile = () => {
       return;
     }
 
+   
     const formData = new FormData();
     formData.append("profilePic", file);
 
@@ -86,19 +88,33 @@ const Profile = () => {
     const match = url.match(regex);
     return match ? match[1] : null;
   };
-
+  const handleVideoUpdate = async () => {
+    try {
+      const token = JSON.parse(localStorage.getItem("userInfo")).token;
+      const { data } = await axios.put(
+        `http://localhost:5000/api/profile/mentor/${user._id}`,
+        { videoLink },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setUser({ ...user, videoLink: data.videoLink });
+      localStorage.setItem("userInfo", JSON.stringify({ ...user, videoLink: data.videoLink }));
+      setEditingVideo(false);
+    } catch (error) {
+      console.error("Failed to update video link:", error);
+    }
+  };
   return (
     <div style={{ backgroundColor: "#6C63FF", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <Container className="d-flex justify-content-center">
         {user ? (
-          <Card className="shadow-lg p-5 position-relative d-flex align-items-start" style={{ width: "100%", maxWidth: "1100px", borderRadius: "20px", display: "flex", flexDirection: "row" }}>
+          <Card className="shadow-lg p-5 position-relative d-flex align-items-start" style={{ width: "100%", maxWidth: "1100px", borderRadius: "20px", display: "flex", flexDirection: "row",marginTop:"50px" }}>
             
             {/* Logout button in top-right corner */}
             <Button
               variant="danger"
               size="sm"
               className="position-absolute"
-              style={{ top: "10px", right: "10px", borderRadius: "20%" }}
+              style={{ top: "10px", right: "10px", borderRadius: "20px" }}
               onClick={handleLogout}
             >
               Logout
@@ -153,7 +169,7 @@ const Profile = () => {
                 {user.role === "mentor" && user.videoLink && (
                   <div className="mt-4">
                     <h4>Introduction Video</h4>
-                    <div className="ratio ratio-16x9">
+                    <div className="ratio ratio-16x9" style={{borderRadius: "30px", overflow : "hidden"}}>
                       <iframe
                         width="100%"
                         height="315"
@@ -164,6 +180,22 @@ const Profile = () => {
                         allowFullScreen
                       ></iframe>
                     </div>
+                    <div className="mt-3">
+                    {editingVideo ? (
+                      <InputGroup>
+                        <FormControl
+                          type="text"
+                          placeholder="Enter YouTube video link"
+                          value={videoLink}
+                          onChange={(e) => setVideoLink(e.target.value)}
+                        />
+                        <Button variant="success" onClick={handleVideoUpdate}>Save</Button>
+                        <Button variant="secondary" onClick={() => setEditingVideo(false)}>Cancel</Button>
+                      </InputGroup>
+                    ) : (
+                      <Button variant="primary" onClick={() => setEditingVideo(true)}>Edit Video Link</Button>
+                    )}
+                  </div>
                   </div>
                 )}
               </div>
