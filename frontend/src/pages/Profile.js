@@ -84,30 +84,30 @@ const Profile = () => {
     <div style={{ backgroundColor: "#6C63FF", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <Container className="d-flex justify-content-center">
         {user ? (
-          <Card className="shadow-lg p-5 position-relative d-flex flex-row align-items-center" style={{ width: "100%", maxWidth: "1100px", borderRadius: "20px" }}>
+          <Card className="shadow-lg p-5 position-relative d-flex align-items-center" style={{ width: "100%", maxWidth: "1100px", borderRadius: "20px", display: "flex", flexDirection: "row" }}>
             
             {/* Logout button in top-right corner */}
             <Button
               variant="danger"
               size="sm"
               className="position-absolute"
-              style={{ top: "10px", right: "10px", borderRadius: "50%" }}
+              style={{ top: "10px", right: "10px", borderRadius: "20%" }}
               onClick={handleLogout}
             >
               Logout
             </Button>
 
-            {/* Profile Picture - Fixed Position */}
+            {/* Profile Picture */}
             <div className="position-relative" style={{ marginRight: "20px" }}>
               <Image
                 src={`http://localhost:5000${profilePic}`}
                 roundedCircle
-                width={300}
-                height={300}
+                width={200}
+                height={200}
                 className="border border-3 border-white shadow profile-pic-hover"
               />
               
-              {/* Upload & Edit Buttons below the profile pic */}
+              {/* Upload & Edit Buttons */}
               <div className="mt-2 text-center">
                 <Button variant="primary" size="sm" className="me-2 profile-btn-hover" onClick={handleUpload} style={{ borderRadius: "20px" }}>
                   Upload
@@ -119,29 +119,29 @@ const Profile = () => {
               </div>
             </div>
 
-            {/* User Info Section - Next to Profile Picture */}
+            {/* User Info Section */}
             <div className="text-start" style={{ flex: 1 }}>
-              {/* User Name */}
               <h2 style={{ fontSize: "2.5rem", fontWeight: "700", fontFamily: "'Poppins', sans-serif", marginBottom: "8px" }}>
                 {user.name}
               </h2>
 
-              {/* Email with Copy Button */}
-              <InputGroup className="mb-3" style={{ maxWidth: "400px" }}>
-                <FormControl
-                  value={user.email}
-                  readOnly
-                  style={{ fontSize: "1.2rem", fontWeight: "400", backgroundColor: "#fff" }}
-                />
-                <Button variant="outline-secondary" onClick={handleCopyEmail}>
-                  <FaCopy />
-                </Button>
-              </InputGroup>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <InputGroup className="mb-3" style={{ maxWidth: "400px" }}>
+                  <FormControl
+                    value={user.email}
+                    readOnly
+                    style={{ fontSize: "1.2rem", fontWeight: "400", backgroundColor: "#fff" }}
+                  />
+                  <Button variant="outline-secondary" onClick={handleCopyEmail}>
+                    <FaCopy />
+                  </Button>
+                </InputGroup>
 
-              {/* User Additional Info */}
-              <p style={{ fontSize: "1.1rem" }}>Role: {user.role}</p>
-              {user.interests && <p style={{ fontSize: "1.1rem" }}>Interests: {user.interests}</p>}
-              {user.expertise && <p style={{ fontSize: "1.1rem" }}>Expertise: {user.expertise}</p>}
+                <p style={{ fontSize: "1.1rem" }}>Role: {user.role}</p>
+                {user.interests && <p style={{ fontSize: "1.1rem" }}>Interests: {user.interests.join(", ")}</p>}
+                {user.expertise && <p style={{ fontSize: "1.1rem" }}>Expertise: {user.expertise}</p>}
+                {user.about && <p style={{ fontSize: "1.1rem" }}>About: {user.about}</p>} {/* Added About field */}
+              </div>
             </div>
           </Card>
         ) : null}
