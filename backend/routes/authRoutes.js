@@ -17,7 +17,7 @@ const generateToken = (id, role) => {
 router.post(
   "/signup",
   asyncHandler(async (req, res) => {
-    const { name, email, password, role, interests, expertise, experience, about ,videoLink} = req.body;
+    const { name, email, password, role, interests, expertise, experience, about, videoLink, profilePic } = req.body;
 
     // Check if user/mentor exists
     const userExists = await User.findOne({ email });
@@ -40,7 +40,8 @@ router.post(
         expertise,
         experience,
         about,
-        videoLink, // Include about for mentors
+        videoLink,
+        profilePic, // Store profile picture
       });
     } else {
       newUser = await User.create({
@@ -48,7 +49,8 @@ router.post(
         email,
         password: hashedPassword,
         interests,
-        about, // Include about for users
+        about,
+        profilePic, // Store profile picture
       });
     }
 
@@ -59,7 +61,8 @@ router.post(
         email: newUser.email,
         role,
         about: newUser.about,
-        videoLink:newUser.videoLink, // Send about field in response
+        videoLink: newUser.videoLink,
+        profilePic: newUser.profilePic, // Send profile picture in response
         token: generateToken(newUser.id, role),
       });
     } else {
@@ -86,11 +89,11 @@ router.post(
         name: account.name,
         email: account.email,
         role: user ? "student" : "mentor",
-        about: account.about, // Include about field in login response
+        about: account.about,
+        profilePic: account.profilePic, // Include profile picture in response
         token: generateToken(account.id, user ? "student" : "mentor"),
       };
 
-      // Only include videoLink for mentors
       if (mentor) {
         response.videoLink = mentor.videoLink || ""; // Include videoLink for mentors
       }
@@ -102,7 +105,6 @@ router.post(
     }
   })
 );
-
 
 // Get User/Mentor Profile
 router.get(
@@ -116,7 +118,8 @@ router.get(
       role: req.user.expertise ? "mentor" : "student",
       interests: req.user.interests || [],
       expertise: req.user.expertise || [],
-      about: req.user.about || "", // Include about field in profile response
+      about: req.user.about || "",
+      profilePic: req.user.profilePic || "", // Include profile picture in profile response
     });
   })
 );
