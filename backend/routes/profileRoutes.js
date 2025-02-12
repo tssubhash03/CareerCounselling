@@ -69,7 +69,7 @@ router.put("/mentor/:id", protect, asyncHandler(async (req, res) => {
   mentor.experience = req.body.experience || mentor.experience;
   mentor.bio = req.body.bio || mentor.bio;
   mentor.profilePic = req.body.profilePic || mentor.profilePic;
-
+  mentor.videoLink = req.body.videoLink || mentor.videoLink;
   const updatedMentor = await mentor.save();
   res.json(updatedMentor);
 }));

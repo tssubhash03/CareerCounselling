@@ -8,7 +8,8 @@ const asyncHandler = require("express-async-handler");
 router.get("/all", async (req, res) => {
   try {
     const mentors = await Mentor.find(); // Fetch all mentors from DB
-    res.json(mentors);
+    res.status(200).json(mentors);
+    
   } catch (error) {
     console.error("Error fetching mentors:", error);
     res.status(500).json({ message: "Server error" });

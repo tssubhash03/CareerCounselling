@@ -6,7 +6,7 @@ const mentorSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     expertise: [{ type: String, required: true }], // Example: ["AI", "Cybersecurity"]
-    experience: { type: Number, required: true }, // Years of experience
+    experience: { type: Number, default :"" }, // Years of experience
     about: { type: String, default: "" }, // Short bio (previously 'bio')
     profilePic: { type: String, default: "" }, // Profile picture URL
     videoLink: { type: String, default: "" }, // Mentor's introduction video link

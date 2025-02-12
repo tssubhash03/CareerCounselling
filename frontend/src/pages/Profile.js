@@ -80,11 +80,18 @@ const Profile = () => {
     alert("Email copied!");
   };
 
+  // Function to extract YouTube Video ID
+  const extractYouTubeID = (url) => {
+    const regex = /(?:youtube\.com\/(?:.*v=|embed\/|v\/)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  };
+
   return (
     <div style={{ backgroundColor: "#6C63FF", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <Container className="d-flex justify-content-center">
         {user ? (
-          <Card className="shadow-lg p-5 position-relative d-flex align-items-center" style={{ width: "100%", maxWidth: "1100px", borderRadius: "20px", display: "flex", flexDirection: "row" }}>
+          <Card className="shadow-lg p-5 position-relative d-flex align-items-start" style={{ width: "100%", maxWidth: "1100px", borderRadius: "20px", display: "flex", flexDirection: "row" }}>
             
             {/* Logout button in top-right corner */}
             <Button
@@ -98,12 +105,12 @@ const Profile = () => {
             </Button>
 
             {/* Profile Picture */}
-            <div className="position-relative" style={{ marginRight: "20px" }}>
+            <div className="position-relative" style={{ marginRight: "20px", flex: "0 0 200px" }}>
               <Image
                 src={`http://localhost:5000${profilePic}`}
                 roundedCircle
-                width={200}
-                height={200}
+                width={300}
+                height={300}
                 className="border border-3 border-white shadow profile-pic-hover"
               />
               
@@ -141,6 +148,24 @@ const Profile = () => {
                 {user.interests && <p style={{ fontSize: "1.1rem" }}>Interests: {user.interests.join(", ")}</p>}
                 {user.expertise && <p style={{ fontSize: "1.1rem" }}>Expertise: {user.expertise}</p>}
                 {user.about && <p style={{ fontSize: "1.1rem" }}>About: {user.about}</p>} {/* Added About field */}
+                
+                {/* YouTube Video Section (Only for Mentors) */}
+                {user.role === "mentor" && user.videoLink && (
+                  <div className="mt-4">
+                    <h4>Introduction Video</h4>
+                    <div className="ratio ratio-16x9">
+                      <iframe
+                        width="100%"
+                        height="315"
+                        src={`https://www.youtube.com/embed/${extractYouTubeID(user.videoLink)}`}
+                        title="Mentor Introduction Video"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      ></iframe>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </Card>
