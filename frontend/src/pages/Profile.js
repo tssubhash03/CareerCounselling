@@ -3,6 +3,7 @@ import { Button, Container, Card, Image, InputGroup, FormControl } from "react-b
 import { FaPencilAlt, FaCopy } from "react-icons/fa";
 import axios from "axios";
 import AuthModal from "../components/AuthModal";
+import { motion } from "framer-motion";
 
 const Profile = () => {
   const [showModal, setShowModal] = useState(false);
@@ -107,6 +108,11 @@ const Profile = () => {
     <div style={{ backgroundColor: "#6C63FF", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <Container className="d-flex justify-content-center">
         {user ? (
+          <motion.div
+          initial={{ opacity: 0, y: 50 }} // Starts invisible and slightly below
+          animate={{ opacity: 1, y: 0 }} // Moves to normal position
+          transition={{ duration: 0.6, ease: "easeOut" }} // Smooth transition
+        >
           <Card className="shadow-lg p-5 position-relative d-flex align-items-start" style={{ width: "100%", maxWidth: "1100px", borderRadius: "20px", display: "flex", flexDirection: "row",marginTop:"50px" }}>
             
             {/* Logout button in top-right corner */}
@@ -201,6 +207,7 @@ const Profile = () => {
               </div>
             </div>
           </Card>
+        </motion.div>
         ) : null}
 
         {/* Auth Modal is always open if user is not logged in */}
