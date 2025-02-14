@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
-  const [role, setRole] = useState(""); // To store the role
-  const navigate = useNavigate(); // For navigation
+  const [role, setRole] = useState(""); // Store mentor role
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -21,11 +21,11 @@ const UserList = () => {
         const response = await axios.get("http://localhost:5000/api/auth/users", {
           headers: {
             Authorization: `Bearer ${token}`,
-            Role: decodedToken?.role, // Send the role in headers (optional)
+            Role: decodedToken?.role,
           },
         });
+
         setUsers(response.data);
-        console.log("Users", response.data);
       } catch (error) {
         console.error("Error fetching users", error);
       }
@@ -36,31 +36,28 @@ const UserList = () => {
 
   const handleChat = async (userId) => {
     try {
-      const mentorId = JSON.parse(localStorage.getItem("userInfo"))._id;
+      const mentorData = JSON.parse(localStorage.getItem("userInfo"));
+      const mentorId = mentorData._id;
       const token = localStorage.getItem("token");
-      // Check if a chat room already exists between the mentor and the user
-      const response = await axios.get(`http://localhost:5000/api/chat/room/${mentorId}/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
 
-      if (response.data && response.data._id) {
-        // If chat room exists, navigate to the existing chat room
-        navigate(`/chat/${response.data._id}`);
-      } else {
-        // If no chat room exists, create a new one
-        const newRoomResponse = await axios.post(
-          "http://localhost:5000/api/chat/room",
-          { user1: mentorId, user2: userId },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        navigate(`/chat/${newRoomResponse.data._id}`);
+      if (!mentorId || !userId) {
+        console.error("Invalid mentor or user ID");
+        return;
       }
+
+      // 🔹 Step 1: Call API to create/retrieve chat room
+      const response = await axios.post(
+        "http://localhost:5000/api/chat/room",
+        { user1: mentorId, user2: userId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // 🔹 Step 2: Navigate to the chat room with the retrieved room ID
+      navigate(`/chat/${response.data._id}`);
     } catch (error) {
       console.error("Error starting chat:", error);
     }
@@ -69,14 +66,14 @@ const UserList = () => {
   return (
     <div className="container mt-4">
       <h2>All Users</h2>
-      <p>Logged in as: {role}</p> {/* Display role */}
+      <p>Logged in as: {role}</p>
       <table className="table table-striped">
         <thead>
           <tr>
             <th>Name</th>
             <th>Email</th>
             <th>Interests</th>
-            <th>Actions</th> {/* Add actions column */}
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -87,10 +84,7 @@ const UserList = () => {
               <td>{user.interests?.join(", ") || "N/A"}</td>
               <td>
                 {role === "mentor" && (
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => handleChat(user._id)} // Chat with the user
-                  >
+                  <button className="btn btn-primary" onClick={() => handleChat(user._id)}>
                     Chat with Student
                   </button>
                 )}

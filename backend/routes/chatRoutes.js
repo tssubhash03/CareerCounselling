@@ -2,24 +2,20 @@ const express = require("express");
 const mongoose = require("mongoose"); 
 const ChatRoom = require("../models/ChatRoom");
 const Message = require("../models/Message");
-const User = require("../models/User");
 
 const router = express.Router();
 
 // ✅ Create or Get an Existing Chat Room
 router.post("/room", async (req, res) => {
-  let { user1, user2 } = req.body; // ✅ Change `const` to `let`
-
-  console.log("🔍 Received user1:", user1);
-  console.log("🔍 Received user2:", user2);
+  let { user1, user2 } = req.body;
 
   try {
     if (!mongoose.Types.ObjectId.isValid(user1) || !mongoose.Types.ObjectId.isValid(user2)) {
       return res.status(400).json({ error: "Invalid user ID format" });
     }
 
-    user1 = new mongoose.Types.ObjectId(user1); // ✅ Now allowed
-    user2 = new mongoose.Types.ObjectId(user2); // ✅ Now allowed
+    user1 = new mongoose.Types.ObjectId(user1);
+    user2 = new mongoose.Types.ObjectId(user2);
 
     let chatRoom = await ChatRoom.findOne({ users: { $all: [user1, user2] } });
 
@@ -30,47 +26,27 @@ router.post("/room", async (req, res) => {
 
     res.status(200).json(chatRoom);
   } catch (error) {
-    console.error("Error finding chat room:", error);
+    console.error("Error finding/creating chat room:", error);
     res.status(500).json({ error: "Server error" });
   }
 });
-
-router.get("/room/:user1/:user2", async (req, res) => {
-  try {
-    const { user1, user2 } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(user1) || !mongoose.Types.ObjectId.isValid(user2)) {
-      return res.status(400).json({ error: "Invalid user ID format" });
-    }
-
-    const chatRoom = await ChatRoom.findOne({ users: { $all: [user1, user2] } });
-
-    if (!chatRoom) {
-      return res.status(404).json({ message: "Chat room not found" });
-    }
-
-    res.status(200).json(chatRoom);
-  } catch (error) {
-    console.error("Error finding chat room:", error);
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
 
 // ✅ Send a Message
 router.post("/message", async (req, res) => {
-  const { chatRoom, sender, text } = req.body;
-
+  const { roomId, senderId, text } = req.body;
+    console.log("chatRoom", roomId);
+    console.log("sender", senderId);
+    console.log("text", text);
+    console.log("Valid of chatRoom", mongoose.Types.ObjectId.isValid(roomId));
+    console.log("Valid of sender", mongoose.Types.ObjectId.isValid(senderId));
   try {
-    // Validate chatRoom and sender as valid ObjectIds
-    if (!mongoose.Types.ObjectId.isValid(chatRoom) || !mongoose.Types.ObjectId.isValid(sender)) {
+    if (!mongoose.Types.ObjectId.isValid(roomId) || !mongoose.Types.ObjectId.isValid(senderId)) {
       return res.status(400).json({ error: "Invalid chatRoom or sender ID format" });
     }
 
-    // Convert to ObjectId after validation
     const message = new Message({
-      chatRoom: new mongoose.Types.ObjectId(chatRoom),
-      sender: new mongoose.Types.ObjectId(sender),
+      chatRoom: new mongoose.Types.ObjectId(roomId),
+      sender: new mongoose.Types.ObjectId(senderId),
       text
     });
 

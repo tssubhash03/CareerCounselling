@@ -1,169 +1,95 @@
-import { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { io } from "socket.io-client";
-
-const socket = io("http://localhost:5000");
+import { useParams } from "react-router-dom";
 
 const ChatPage = () => {
   const { roomId } = useParams();
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([]); // Ensure messages is always an array
   const [newMessage, setNewMessage] = useState("");
-  const [userId, setUserId] = useState(""); // Logged-in user ID
-  const messagesEndRef = useRef(null);
+  const [user, setUser] = useState(null);
 
-  // Join the room and fetch initial messages on component mount
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("userInfo"));
-    if (userData && userData._id) {
-      setUserId(userData._id);
+    const fetchMessages = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`http://localhost:5000/api/chat/messages/${roomId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setMessages(response.data || []); // Ensure messages is always an array
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
+
+    fetchMessages();
+
+    // Fetch user info
+    const storedUser = JSON.parse(localStorage.getItem("userInfo"));
+    if (storedUser) {
+      setUser(storedUser);
     }
 
-    // Emit joinRoom event to join the chat room
-    socket.emit("joinRoom", roomId);
+    // Optional: Polling for real-time updates every 5 seconds (if no WebSocket)
+    const interval = setInterval(fetchMessages, 5000);
 
-    // Fetch initial messages from the backend (server)
-    axios.get(`http://localhost:5000/api/chat/messages/${roomId}`).then((res) => {
-      setMessages(res.data);
-    });
-
-    // Listen for incoming messages via socket (for both user and mentor)
-    socket.on("receiveMessage", (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]); // Add new message to state
-    });
-
-    // Cleanup socket event listener when the component is unmounted
-    return () => {
-      socket.off("receiveMessage");
-    };
-  }, [roomId]); // Dependency on roomId ensures effect runs on room change
-
-  // Scroll to the bottom of the chat when messages update
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    return () => clearInterval(interval);
+  }, [roomId]);
 
   const sendMessage = async () => {
     if (!newMessage.trim()) return;
 
-    const messageData = {
-      chatRoom: roomId,
-      sender: userId,
-      text: newMessage,
-      timestamp: new Date().toISOString(),
-    };
+    try {
+      const token = localStorage.getItem("token");
+      const senderId = user?._id; // Ensure user is set
 
-    // Send the message to the backend
-    await axios.post("http://localhost:5000/api/chat/message", messageData);
-    
-    // Emit the message through socket to notify others (mentor and user)
-    socket.emit("sendMessage", messageData);
-    
-    setNewMessage(""); // Reset the input field
+      const response = await axios.post(
+        "http://localhost:5000/api/chat/message",
+        { roomId, senderId, text: newMessage },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setMessages([...messages, response.data]); // Update messages
+      setNewMessage("");
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
 
   return (
-    <div style={styles.chatContainer}>
-      {/* Messages */}
-      <div style={styles.messages}>
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            style={{
-              ...styles.messageBubble,
-              ...(msg.sender === userId ? styles.myMessage : styles.otherMessage),
-            }}
-          >
-            <strong>{msg.sender === userId ? "You" : msg.sender.name}</strong>
-            <p>{msg.text}</p>
-            <span style={styles.timestamp}>{new Date(msg.timestamp).toLocaleTimeString()}</span>
-          </div>
-        ))}
-        <div ref={messagesEndRef} />
+    <div className="container mt-4">
+      <h2>Chat Room</h2>
+      <div className="chat-box">
+        {messages.length > 0 ? (
+          messages.map((msg, index) => (
+            <div key={index} className={msg.sender === user?._id ? "my-message" : "other-message"}>
+              <strong>{msg.senderName || "Unknown"}:</strong> {msg.text}
+            </div>
+          ))
+        ) : (
+          <p>No messages yet.</p>
+        )}
       </div>
 
-      {/* Input Box */}
-      <div style={styles.chatInput}>
+      <div className="chat-input">
         <input
+          type="text"
+          className="form-control"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Type a message..."
-          style={styles.inputBox}
         />
-        <button onClick={sendMessage} style={styles.sendButton}>
+        <button className="btn btn-primary mt-2" onClick={sendMessage}>
           Send
         </button>
       </div>
     </div>
   );
-};
-
-const styles = {
-  chatContainer: {
-    display: "flex",
-    flexDirection: "column",
-    height: "90vh",
-    width: "100%",
-    maxWidth: "600px",
-    margin: "auto",
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    overflow: "hidden",
-    backgroundColor: "#f0f0f0",
-  },
-  messages: {
-    flex: 1,
-    overflowY: "auto",
-    padding: "10px",
-  },
-  messageBubble: {
-    maxWidth: "75%",
-    padding: "10px",
-    margin: "5px",
-    borderRadius: "10px",
-    wordWrap: "break-word",
-  },
-  myMessage: {
-    backgroundColor: "#25d366", // WhatsApp green
-    color: "white",
-    alignSelf: "flex-end",
-    textAlign: "right",
-  },
-  otherMessage: {
-    backgroundColor: "#ececec",
-    color: "black",
-    alignSelf: "flex-start",
-    textAlign: "left",
-  },
-  timestamp: {
-    fontSize: "0.8rem",
-    color: "gray",
-    textAlign: "right",
-    display: "block",
-    marginTop: "3px",
-  },
-  chatInput: {
-    display: "flex",
-    padding: "10px",
-    background: "white",
-    borderTop: "1px solid #ddd",
-  },
-  inputBox: {
-    flex: 1,
-    padding: "10px",
-    border: "none",
-    borderRadius: "20px",
-    outline: "none",
-  },
-  sendButton: {
-    marginLeft: "10px",
-    padding: "10px 15px",
-    backgroundColor: "#128c7e",
-    color: "white",
-    border: "none",
-    borderRadius: "50%",
-    cursor: "pointer",
-  },
 };
 
 export default ChatPage;
