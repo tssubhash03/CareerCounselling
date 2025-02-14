@@ -6,7 +6,7 @@ import MentorRecommendation from "./pages/MentorRecommendation";
 import ProfilePage from "./pages/Profile";
 import MentorDetails from "./pages/MentorDetails";
 import ChatPage from "./pages/ChatPage";
-
+import UserList from "./pages/UserList";
 function App() {
   return (
     <Router>
@@ -14,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/mentors" element={<MentorList />} />
+        <Route path="/userlist" element={<UserList />} />
         <Route path="/mentors/:id" element={<MentorDetails />} />
         <Route path="/recommend" element={<MentorRecommendation />} />
         <Route path="/chat/:roomId" element={<ChatPage />} />

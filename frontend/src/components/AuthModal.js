@@ -36,6 +36,10 @@ const AuthModal = ({ show, handleClose }) => {
           email: formData.email,
           password: formData.password,
         }, config);
+        console.log("Login Response:", response.data); // Debugging response
+
+    localStorage.setItem("token", response.data.token);
+    console.log("Token stored:", localStorage.getItem("token")); // Debugging token storage
       }
 
       console.log("Response:", response.data);

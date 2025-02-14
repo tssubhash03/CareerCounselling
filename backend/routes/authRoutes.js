@@ -124,4 +124,15 @@ router.get(
   })
 );
 
+router.get("/users", protect, asyncHandler(async (req, res) => {
+  console.log("User role:", req.headers.role);
+  if (req.headers.role !== "mentor") {
+    res.status(403);
+    throw new Error("Access denied. Only mentors can view users.");
+  }
+
+  const users = await User.find({}, "name email interests");
+  res.json(users);
+}));
+
 module.exports = router;

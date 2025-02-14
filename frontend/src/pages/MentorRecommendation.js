@@ -1,5 +1,5 @@
 const MentorRecommendation = () => {
-    return <h1>Mentor Recommendation Page</h1>;
+    return <h1>{localStorage.getItem("userInfo")}</h1>;
   };
   
 export default MentorRecommendation;

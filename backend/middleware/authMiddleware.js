@@ -1,49 +1,40 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Mentor = require("../models/Mentor");
-const asyncHandler = require("express-async-handler");
 
-// Middleware to protect routes
-const protect = asyncHandler(async (req, res, next) => {
+const protect = async (req, res, next) => {
   let token;
 
-  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
     try {
-      // Extract token
+      // Get token from header
       token = req.headers.authorization.split(" ")[1];
 
-      // Verify token
+      // Decode the token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Check if user is a student or mentor
-      req.user = (await User.findById(decoded.id)) || (await Mentor.findById(decoded.id));
+      // Attach user info to request
+      req.user = await User.findById(decoded.id) || await Mentor.findById(decoded.id);
 
-      if (!req.user) {
-        res.status(401);
-        throw new Error("User not found");
+      // Check if the user is a mentor
+      console.log("User role:", req.user.role);
+      if (req.headers.role !== 'mentor') {
+        return res.status(403).json({ message: "Access denied. Only mentors can view users." });
       }
-      console.log("Authenticated User found: ", req.user);
-      next(); // Move to the next middleware
+
+      next();
     } catch (error) {
-      res.status(401);
-      throw new Error("Not authorized, invalid token");
+      console.error(error);
+      res.status(401).json({ message: "Not authorized, invalid token" });
     }
   }
 
   if (!token) {
-    res.status(401);
-    throw new Error("Not authorized, no token");
+    res.status(401).json({ message: "Not authorized, no token" });
   }
-});
+};
 
-// Middleware to check if the user is a mentor
-const mentorOnly = asyncHandler(async (req, res, next) => {
-  if (req.user && req.user.expertise) {
-    next();
-  } else {
-    res.status(403);
-    throw new Error("Access denied. Only mentors can access this route.");
-  }
-});
-
-module.exports = { protect, mentorOnly };
+module.exports = { protect };

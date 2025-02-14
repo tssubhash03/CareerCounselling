@@ -35,6 +35,27 @@ router.post("/room", async (req, res) => {
   }
 });
 
+router.get("/room/:user1/:user2", async (req, res) => {
+  try {
+    const { user1, user2 } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(user1) || !mongoose.Types.ObjectId.isValid(user2)) {
+      return res.status(400).json({ error: "Invalid user ID format" });
+    }
+
+    const chatRoom = await ChatRoom.findOne({ users: { $all: [user1, user2] } });
+
+    if (!chatRoom) {
+      return res.status(404).json({ message: "Chat room not found" });
+    }
+
+    res.status(200).json(chatRoom);
+  } catch (error) {
+    console.error("Error finding chat room:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 
 // ✅ Send a Message
 router.post("/message", async (req, res) => {

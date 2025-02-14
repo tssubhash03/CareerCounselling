@@ -31,21 +31,21 @@ io.on("connection", (socket) => {
     console.log(`👥 User joined room: ${room}`);
   });
 
-  socket.on("sendMessage", async ({ chatRoom, sender, text }) => {
-    const message = new Message({
-      chatRoom: new mongoose.Types.ObjectId(chatRoom), 
-      sender: new mongoose.Types.ObjectId(sender),  
-      text
-    });
-    
+  // Assuming this is where the message is saved in the database:
+// Assuming you're emitting a message after saving it to the database
+socket.on("sendMessage", async (messageData) => {
+  try {
+    // Save the message to the database (MongoDB)
+    const message = new Message(messageData); // assuming Message is your message model
     await message.save();
 
-    io.to(chatRoom).emit("receiveMessage", message);
-  });
+    // Emit the message to all clients in the room (both user and mentor)
+    io.to(messageData.chatRoom).emit("receiveMessage", message); // Broadcast to the room
+  } catch (error) {
+    console.error("Error in sending message:", error);
+  }
+});
 
-  socket.on("disconnect", () => {
-    console.log("🔴 A user disconnected:", socket.id);
-  });
 });
 const chatRoutes = require("./routes/chatRoutes");
 app.use("/api/chat", chatRoutes);
@@ -60,6 +60,9 @@ app.use("/uploads", express.static("uploads"));
 
 const mentorRoutes = require("./routes/mentorRoutes");
 app.use("/api/mentors", mentorRoutes);
+
+const userRoutes = require("./routes/userRoutes");
+app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");
