@@ -17,7 +17,20 @@ const generateToken = (id, role) => {
 router.post(
   "/signup",
   asyncHandler(async (req, res) => {
-    const { name, email, password, role, interests, expertise, experience, about, videoLink, profilePic } = req.body;
+    console.log("Received Data:", req.body); // 🔍 Log incoming request
+
+    const { 
+      name, 
+      email, 
+      password, 
+      role, 
+      interests, 
+      expertise, 
+      experience, 
+      about, 
+      videoLink, 
+      profilePic 
+    } = req.body;
 
     // Check if user/mentor exists
     const userExists = await User.findOne({ email });
@@ -37,22 +50,28 @@ router.post(
         name,
         email,
         password: hashedPassword,
-        expertise,
+        expertise: expertise && typeof expertise === "string" 
+          ? expertise.split(",").map(skill => skill.trim()) 
+          : [], // Convert only if it's a string
         experience,
         about,
         videoLink,
-        profilePic, // Store profile picture
+        profilePic,
       });
     } else {
       newUser = await User.create({
         name,
         email,
         password: hashedPassword,
-        interests,
+        interests: interests && typeof interests === "string" 
+          ? interests.split(",").map(field => field.trim()) 
+          : [], // Convert only if it's a string
         about,
-        profilePic, // Store profile picture
+        profilePic,
       });
     }
+
+    console.log("Stored Data:", newUser); // 🔍 Log stored user
 
     if (newUser) {
       res.status(201).json({
@@ -61,8 +80,10 @@ router.post(
         email: newUser.email,
         role,
         about: newUser.about,
-        videoLink: newUser.videoLink,
-        profilePic: newUser.profilePic, // Send profile picture in response
+        interests: newUser.interests || [], 
+        expertise: newUser.expertise || [],
+        videoLink: newUser.videoLink || "",
+        profilePic: newUser.profilePic,
         token: generateToken(newUser.id, role),
       });
     } else {
@@ -71,6 +92,8 @@ router.post(
     }
   })
 );
+
+
 
 // User/Mentor Login
 router.post(

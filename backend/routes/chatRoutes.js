@@ -1,7 +1,9 @@
 const express = require("express");
-const mongoose = require("mongoose"); 
+const mongoose = require("mongoose");
 const ChatRoom = require("../models/ChatRoom");
 const Message = require("../models/Message");
+const User = require("../models/User");  // ✅ Added missing import
+const Mentor = require("../models/Mentor"); // ✅ Added missing import
 
 const router = express.Router();
 
@@ -33,20 +35,24 @@ router.post("/room", async (req, res) => {
 
 // ✅ Send a Message
 router.post("/message", async (req, res) => {
-  const { roomId, senderId, text } = req.body;
-    console.log("chatRoom", roomId);
-    console.log("sender", senderId);
-    console.log("text", text);
-    console.log("Valid of chatRoom", mongoose.Types.ObjectId.isValid(roomId));
-    console.log("Valid of sender", mongoose.Types.ObjectId.isValid(senderId));
+  const { roomId, senderId, senderType, text } = req.body;
+
+  console.table(req.body); // ✅ Improved debugging
+
   try {
     if (!mongoose.Types.ObjectId.isValid(roomId) || !mongoose.Types.ObjectId.isValid(senderId)) {
       return res.status(400).json({ error: "Invalid chatRoom or sender ID format" });
     }
 
+    // Validate senderType
+    if (!["User", "Mentor"].includes(senderType)) {
+      return res.status(400).json({ error: "Invalid senderType. Must be 'User' or 'Mentor'" });
+    }
+
     const message = new Message({
       chatRoom: new mongoose.Types.ObjectId(roomId),
       sender: new mongoose.Types.ObjectId(senderId),
+      senderType,
       text
     });
 
@@ -59,12 +65,48 @@ router.post("/message", async (req, res) => {
   }
 });
 
-// ✅ Get All Messages in a Chat Room
+// ✅ Get All Messages in a Chat Room (Optimized)
 router.get("/messages/:roomId", async (req, res) => {
   try {
-    const messages = await Message.find({ chatRoom: req.params.roomId })
-      .sort({ createdAt: 1 })
-      .populate("sender", "name");
+    if (!mongoose.Types.ObjectId.isValid(req.params.roomId)) {
+      return res.status(400).json({ error: "Invalid chat room ID format" });
+    }
+
+    const messages = await Message.aggregate([
+      { $match: { chatRoom: new mongoose.Types.ObjectId(req.params.roomId) } },
+      { $sort: { createdAt: 1 } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "sender",
+          foreignField: "_id",
+          as: "userSender"
+        }
+      },
+      {
+        $lookup: {
+          from: "mentors",
+          localField: "sender",
+          foreignField: "_id",
+          as: "mentorSender"
+        }
+      },
+      {
+        $project: {
+          chatRoom: 1,
+          senderType: 1,
+          text: 1,
+          createdAt: 1,
+          sender: {
+            $cond: {
+              if: { $eq: ["$senderType", "User"] },
+              then: { $arrayElemAt: ["$userSender", 0] },
+              else: { $arrayElemAt: ["$mentorSender", 0] }
+            }
+          }
+        }
+      }
+    ]);
 
     res.status(200).json(messages);
   } catch (error) {
@@ -74,3 +116,4 @@ router.get("/messages/:roomId", async (req, res) => {
 });
 
 module.exports = router;
+``

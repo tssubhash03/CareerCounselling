@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Alert, Row, Col } from "react-bootstrap";
 import axios from "axios";
 
@@ -8,13 +8,34 @@ const AuthModal = ({ show, handleClose }) => {
     name: "",
     email: "",
     password: "",
-    interestedField: "",
+    interestedField: "", // Only for students
+    expertise: "", // Only for mentors
     role: "student",
     about: "",
     videoLink: "", // Only for mentors
+    experience: "", // Experience field added (Only for mentors)
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!show) {
+      // Reset form data when modal is closed
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        interestedField: "", // Only for students
+        expertise: "", // Only for mentors
+        role: "student",
+        about: "",
+        videoLink: "",
+        experience: "",
+      });
+      setError(""); // Clear any errors
+      setIsSignup(false); // Reset to Login page on modal close
+    }
+  }, [show]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -24,28 +45,39 @@ const AuthModal = ({ show, handleClose }) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
+  
     try {
       const config = { headers: { "Content-Type": "application/json" } };
-
+  
+      let requestData = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role,
+        about: formData.about,
+        profilePic: formData.profilePic,
+      };
+  
+      if (formData.role === "student") {
+        requestData.interests = formData.interestedField || ""; // 🔥 Ensure data is sent
+      } else if (formData.role === "mentor") {
+        requestData.expertise = formData.expertise || ""; // 🔥 Ensure data is sent
+        requestData.experience = formData.experience || "";
+        requestData.videoLink = formData.videoLink || "";
+      }
+  
       let response;
       if (isSignup) {
-        response = await axios.post("http://localhost:5000/api/auth/signup", formData, config);
+        response = await axios.post("http://localhost:5000/api/auth/signup", requestData, config);
       } else {
         response = await axios.post("http://localhost:5000/api/auth/login", {
           email: formData.email,
           password: formData.password,
         }, config);
-        console.log("Login Response:", response.data); // Debugging response
-
-    localStorage.setItem("token", response.data.token);
-    console.log("Token stored:", localStorage.getItem("token")); // Debugging token storage
       }
-
-      console.log("Response:", response.data);
+  
       localStorage.setItem("userInfo", JSON.stringify(response.data));
-      window.dispatchEvent(new Event("storage")); // Notify all components to update
-
+      window.dispatchEvent(new Event("storage"));
       handleClose();
     } catch (error) {
       setError(error.response?.data?.message || "Something went wrong");
@@ -53,12 +85,20 @@ const AuthModal = ({ show, handleClose }) => {
       setLoading(false);
     }
   };
+  
+
+  const handleLogout = () => {
+    // Clear user data from localStorage
+    localStorage.removeItem("userInfo");
+    // Close modal and set the state to show the login form
+    handleClose();
+    setIsSignup(false); // Ensure login page is shown after logout
+  };
 
   return (
     <Modal show={show} onHide={handleClose} centered size="lg">
       <Modal.Body>
         <Row className="g-0">
-          {/* Left Side: Form */}
           <Col md={6} className="p-4 d-flex flex-column justify-content-center">
             <h4 className="text-center mb-3">{isSignup ? "Sign Up" : "Login"}</h4>
             
@@ -79,17 +119,32 @@ const AuthModal = ({ show, handleClose }) => {
                     />
                   </Form.Group>
 
-                  <Form.Group className="mb-3">
-                    <Form.Label>Interested Field</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="interestedField"
-                      placeholder="Enter your field of interest"
-                      value={formData.interestedField}
-                      onChange={handleChange}
-                      required
-                    />
-                  </Form.Group>
+                  {/* Conditionally render based on role */}
+                  {formData.role === "student" ? (
+                    <Form.Group className="mb-3">
+                      <Form.Label>Interested Field</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="interestedField"
+                        placeholder="Enter your field of interest"
+                        value={formData.interestedField}
+                        onChange={handleChange}
+                        required
+                      />
+                    </Form.Group>
+                  ) : (
+                    <Form.Group className="mb-3">
+                      <Form.Label>Expertise</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="expertise"
+                        placeholder="Enter your field of expertise"
+                        value={formData.expertise}
+                        onChange={handleChange}
+                        required
+                      />
+                    </Form.Group>
+                  )}
 
                   <Form.Group className="mb-3">
                     <Form.Label>Role</Form.Label>
@@ -104,7 +159,7 @@ const AuthModal = ({ show, handleClose }) => {
                     </Form.Select>
                   </Form.Group>
 
-                  {/* About Field for Both Users and Mentors */}
+                  {/* About Field */}
                   <Form.Group className="mb-3">
                     <Form.Label>About</Form.Label>
                     <Form.Control
@@ -116,6 +171,21 @@ const AuthModal = ({ show, handleClose }) => {
                       required
                     />
                   </Form.Group>
+
+                  {/* Experience Field for Mentors */}
+                  {formData.role === "mentor" && (
+                    <Form.Group className="mb-3">
+                      <Form.Label>Experience (Years)</Form.Label>
+                      <Form.Control
+                        type="number"
+                        name="experience"
+                        placeholder="Enter your years of experience"
+                        value={formData.experience}
+                        onChange={handleChange}
+                        required
+                      />
+                    </Form.Group>
+                  )}
 
                   {/* Video Link Field (Only for Mentors) */}
                   {formData.role === "mentor" && (
@@ -181,7 +251,6 @@ const AuthModal = ({ show, handleClose }) => {
             </div>
           </Col>
 
-          {/* Right Side: Illustration */}
           <Col md={6} className="d-none d-md-block">
             <div className="h-100 d-flex align-items-center justify-content-center">
               <img

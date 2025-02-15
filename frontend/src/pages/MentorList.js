@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
-
+import { motion } from "framer-motion";
 const MentorList = () => {
   const [mentors, setMentors] = useState([]);
   const [selectedMentor, setSelectedMentor] = useState(null);
@@ -19,22 +19,65 @@ const MentorList = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <h2>Mentor List</h2>
-      <div className="row">
-        {mentors.map((mentor) => (
-          <div className="col-md-4" key={mentor._id}>
-            <div className="card p-3 shadow">
-              <h5>{mentor.name}</h5>
-              <p>{mentor.expertise}</p>
-              <p>{mentor.experience}</p>
-              <Button variant="primary" onClick={() => handleShowDetails(mentor)}>
-                View Details
-              </Button>
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "#6C63FF", // Background color
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "20px",
+      }}
+    >
+      <motion.div
+          initial={{ opacity: 0, y: 50 }} // Starts invisible and slightly below
+          animate={{ opacity: 1, y: 0 }} // Moves to normal position
+          transition={{ duration: 0.6, ease: "easeOut" }} // Smooth transition
+        >
+          <div className="container">
+        <h2 className="text-center text-white mb-4">Mentor List</h2>
+        
+        {/* Mentor Cards */}
+        <div className="row row-gap-4">
+          {mentors.map((mentor) => (
+            <div className="col-md-4 d-flex justify-content-center" key={mentor._id}>
+              <div
+                className="card p-3 shadow"
+                style={{
+                  borderRadius: "10px",
+                  backgroundColor: "white",
+                  boxShadow: "0px 4px 10px rgba(0,0,0,0.2)",
+                  width: "100%",
+                  maxWidth: "350px",
+                }}
+              >
+                <h5 className="text-center">{mentor.name}</h5>
+                <p><strong>Expertise:</strong> {mentor.expertise}</p>
+                <p><strong>Experience:</strong> {mentor.experience} years</p>
+                
+                {/* Buttons Row */}
+                <div className="row justify-content-center gap-2">
+                  <Button
+                    variant="primary"
+                    className="col-5"
+                    onClick={() => handleShowDetails(mentor)}
+                  >
+                    View Details
+                  </Button>
+                  <Button
+                    variant="success"
+                    className="col-5"
+                    onClick={() => window.location.href = `/mentors/${mentor._id}`}
+                  >
+                    Full Profile
+                  </Button>
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
+        </motion.div>
 
       {/* Modal for Mentor Details */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
@@ -49,9 +92,6 @@ const MentorList = () => {
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             Close
-          </Button>
-          <Button variant="primary" onClick={() => window.location.href = `/mentors/${selectedMentor?._id}`}>
-            Full Details
           </Button>
         </Modal.Footer>
       </Modal>
