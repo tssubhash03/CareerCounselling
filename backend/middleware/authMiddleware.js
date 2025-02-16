@@ -21,9 +21,9 @@ const protect = async (req, res, next) => {
 
       // Check if the user is a mentor
       console.log("User role:", req.user.role);
-      if (req.headers.role !== 'mentor') {
-        return res.status(403).json({ message: "Access denied. Only mentors can view users." });
-      }
+      // if (req.headers.role !== 'mentor') {
+      //   return res.status(403).json({ message: "Access denied. Only mentors can view users." });
+      // }
 
       next();
     } catch (error) {

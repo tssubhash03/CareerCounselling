@@ -40,7 +40,9 @@ router.post(
       res.status(400);
       throw new Error("User already exists");
     }
+    console.log("Received password:", password);
 
+    
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -103,9 +105,20 @@ router.post(
 
     const user = await User.findOne({ email });
     const mentor = await Mentor.findOne({ email });
-
-    const account = user || mentor;
-
+    console.log("User:", user);
+    console.log("Mentor:", mentor);
+    // const account = user || mentor;
+    let account;
+    if(user){
+      account = user;
+    }else{
+      account = mentor;
+    }
+    console.log("Received password:", password);
+console.log("Account:", account);
+console.log("Account Password:", account.password);
+if (!account.password) {
+  return res.status(400).json({ message: "Password not found in DB" });}
     if (account && (await bcrypt.compare(password, account.password))) {
       const response = {
         _id: account.id,

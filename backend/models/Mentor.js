@@ -1,37 +1,34 @@
 const mongoose = require("mongoose");
 
-const mentorSchema = new mongoose.Schema(
-  {
-    name: { type: String, required: true },
+const mentorSchema = new mongoose.Schema({
+  name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    expertise: [{ type: String, required: true }], // Example: ["AI", "Cybersecurity"]
-    experience: { type: Number, default :"" }, // Years of experience
-    about: { type: String, default: "" }, // Short bio (previously 'bio')
-    profilePic: { type: String, default: "" }, // Profile picture URL
-    videoLink: { type: String, default: "" }, // Mentor's introduction video link
+  expertise: [String],
+  experience: { type: Number, required: true }, 
+  about: { type: String, default: "" },
+  profilePic: { type: String, default: "" }, // Profile picture URL
+  videoLink: { type: String, default: "" },
+  rating: { type: Number, default: 0 },
+  reviews: [
+    {
+      reviewerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Stores user/mentor ID
+      reviewerRole: { type: String, enum: ["user", "mentor"], required: true }, // Role of reviewer
+      rating: { type: Number, required: true },
+      review: { type: String, required: true },
+    },
+  ],
+});
 
-    reviews: [
-      {
-        studentId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        rating: { type: Number, required: true, min: 1, max: 5 },
-        review: { type: String, required: true },
-      },
-    ],
-
-    rating: { type: Number, default: 0 },
-  },
-  { timestamps: true }
-);
-
-// Function to calculate average rating
+// Function to recalculate average rating
 mentorSchema.methods.calculateRating = function () {
   if (this.reviews.length === 0) {
     this.rating = 0;
   } else {
-    const totalRating = this.reviews.reduce((sum, review) => sum + review.rating, 0);
-    this.rating = (totalRating / this.reviews.length).toFixed(1);
+    this.rating =
+      this.reviews.reduce((acc, item) => acc + item.rating, 0) / this.reviews.length;
   }
+  return this.rating;
 };
 
 const Mentor = mongoose.model("Mentor", mentorSchema);

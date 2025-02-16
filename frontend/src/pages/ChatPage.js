@@ -30,7 +30,7 @@ const ChatPage = () => {
       setUser(storedUser);
     }
 
-    const interval = setInterval(fetchMessages, 5000);
+    const interval = setInterval(fetchMessages, 250);
     return () => clearInterval(interval);
   }, [roomId]);
 

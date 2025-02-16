@@ -50,7 +50,7 @@ const Home = () => {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.heading}>Welcome to Career Counselling</h1>
+      <h1 style={styles.heading}>Welcome to Career Compass</h1>
 
       {content.map((item, index) => (
         <section
@@ -191,6 +191,7 @@ const styles = {
     cursor: "pointer",
     marginTop: "15px",
     transition: "background 0.3s",
+    boxShadow: "0 0 10px #6C63FF"
   },
   loginButtonHover: {
     backgroundColor: "#574eef",

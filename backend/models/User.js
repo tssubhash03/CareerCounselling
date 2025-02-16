@@ -7,7 +7,8 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     interests: [{ type: String, required: true }], // Example: ["AI", "Cybersecurity"]
     profilePic: { type: String, default: "" }, // Profile picture URL
-    about: { type: String, default: "" }, // Short bio added
+    about: { type: String, default: "" },
+    isMentor: { type: Boolean, default: false }, // Short bio added
   },
   { timestamps: true }
 );

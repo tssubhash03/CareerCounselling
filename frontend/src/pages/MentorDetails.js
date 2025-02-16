@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Container, Card, Button, Spinner, Row, Col } from "react-bootstrap";
-import { m, motion } from "framer-motion";
+import { Container, Card, Button, Spinner, Row, Col, Form } from "react-bootstrap";
+import { motion } from "framer-motion";
 
 const MentorDetails = () => {
-  const { id } = useParams(); // Get mentor ID from URL
-  const navigate = useNavigate(); // For navigation
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [mentor, setMentor] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [rating, setRating] = useState(5);
+  const [review, setReview] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchMentor = async () => {
@@ -25,11 +28,36 @@ const MentorDetails = () => {
     fetchMentor();
   }, [id]);
 
-  // Function to extract YouTube Video ID
   const extractYouTubeID = (url) => {
     const regex = /(?:youtube\.com\/(?:.*v=|embed\/|v\/)|youtu\.be\/)([^"&?\/\s]{11})/;
     const match = url.match(regex);
     return match ? match[1] : null;
+  };
+
+  const submitReview = async () => {
+    if (!review.trim()) return alert("Review cannot be empty!");
+    
+    setSubmitting(true);
+    try {
+      const userData = JSON.parse(localStorage.getItem("userInfo"));
+      const token = userData.token;
+      
+      await axios.post(
+        `http://localhost:5000/api/mentors/${id}/review`,
+        { rating, review },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      alert("Review submitted successfully!");
+      const response = await axios.get(`http://localhost:5000/api/mentors/${id}`);
+      setMentor(response.data);
+      setReview("");
+      setRating(5);
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      alert("Failed to submit review.");
+    }
+    setSubmitting(false);
   };
 
   if (loading) {
@@ -48,28 +76,27 @@ const MentorDetails = () => {
       </Container>
     );
   }
+
   const handleChat = async (mentorId) => {
     try {
-        const userData = JSON.parse(localStorage.getItem("userInfo")); // Retrieve and parse user data
-        const loggedInUserId = userData._id; // Extract only the user ID
+      const userData = JSON.parse(localStorage.getItem("userInfo"));
+      const loggedInUserId = userData._id;
 
-        console.log("📌 Sending Chat Request with:");
-        console.log("User1 (Logged in user):", loggedInUserId);
-        console.log("User2 (Mentor):", mentorId);
       if (!loggedInUserId || !mentorId) {
         console.error("User not logged in!");
         return;
       }
       const response = await axios.post("http://localhost:5000/api/chat/room", {
-        user1: loggedInUserId, // Replace with actual logged-in user ID
+        user1: loggedInUserId,
         user2: mentorId,
       });
-  
+
       navigate(`/chat/${response.data._id}`);
     } catch (error) {
       console.error("Error starting chat:", error);
     }
   };
+
   return (
     <Container fluid className="mt-5 px-5">
       <motion.div
@@ -111,7 +138,8 @@ const MentorDetails = () => {
                   <Card.Text>
                     <strong>Email:</strong> {mentor.email} <br />
                     <strong>Experience:</strong> {mentor.experience} years <br />
-                    <strong>Bio:</strong> {mentor.bio}
+                    <strong>About:</strong> {mentor.about} <br />
+                    <strong>Expertise:</strong> {mentor.expertise}
                   </Card.Text>
                   <Button variant="primary" href={`mailto:${mentor.email}?subject=Inquiry%20About%20Mentoring`}>
                     Contact Mentor
@@ -121,6 +149,60 @@ const MentorDetails = () => {
                     Chat with Mentor
                   </Button>
                 </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+
+          {/* Reviews Section */}
+          <Row className="mt-4">
+            <Col md={12}>
+              <Card className="shadow-lg p-4">
+                <Card.Title className="text-dark">Reviews & Ratings</Card.Title>
+                <div>
+                  {mentor.reviews.length === 0 ? (
+                    <p>No reviews yet. Be the first to review!</p>
+                  ) : (
+                    mentor.reviews.map((rev, index) => (
+                      <Card key={index} className="mb-3 p-3">
+                        <strong>{rev.reviewerRole.toUpperCase()}:</strong> {rev.review} - {rev.rating} ⭐
+                      </Card>
+                    ))
+                  )}
+                </div>
+
+                {/* Review Form */}
+                <Form className="mt-3">
+                  <Form.Group>
+                    <Form.Label>Rating:</Form.Label>
+                    <Form.Control as="select" value={rating} onChange={(e) => setRating(e.target.value)}>
+                      {[1, 2, 3, 4, 5].map((num) => (
+                        <option key={num} value={num}>
+                          {num} Stars
+                        </option>
+                      ))}
+                    </Form.Control>
+                  </Form.Group>
+
+                  <Form.Group className="mt-2">
+                    <Form.Label>Write a Review:</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      rows={3}
+                      value={review}
+                      onChange={(e) => setReview(e.target.value)}
+                      placeholder="Share your experience..."
+                    />
+                  </Form.Group>
+
+                  <Button
+                    className="mt-3"
+                    variant="primary"
+                    onClick={submitReview}
+                    disabled={submitting}
+                  >
+                    {submitting ? "Submitting..." : "Submit Review"}
+                  </Button>
+                </Form>
               </Card>
             </Col>
           </Row>

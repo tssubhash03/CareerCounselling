@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Mentor = require("../models/Mentor");
+const User = require("../models/User");
 const { protect } = require("../middleware/authMiddleware");
 const asyncHandler = require("express-async-handler");
 
@@ -54,9 +55,13 @@ router.post("/:id/review", protect, asyncHandler(async (req, res) => {
     throw new Error("Mentor not found");
   }
 
-  // Check if the student has already reviewed this mentor
+  // Identify the reviewer (user or mentor)
+  const reviewerId = req.user._id;
+  const reviewerRole = req.user.isMentor ? "mentor" : "user"; // Assuming user model has `isMentor` field
+
+  // Check if the user/mentor has already reviewed
   const alreadyReviewed = mentor.reviews.find(
-    (r) => r.studentId.toString() === req.user._id.toString()
+    (r) => r.reviewerId.toString() === reviewerId.toString()
   );
 
   if (alreadyReviewed) {
@@ -66,16 +71,18 @@ router.post("/:id/review", protect, asyncHandler(async (req, res) => {
 
   // Add new review
   mentor.reviews.push({
-    studentId: req.user._id,
+    reviewerId,
+    reviewerRole,
     rating: Number(rating),
-    review
+    review,
   });
 
-  // ✅ Recalculate the average rating
+  // Recalculate and update average rating
   mentor.calculateRating();
-
   await mentor.save();
+
   res.json({ message: "Review added successfully", mentor });
 }));
+
 
 module.exports = router;
