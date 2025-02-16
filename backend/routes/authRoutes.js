@@ -17,7 +17,7 @@ const generateToken = (id, role) => {
 router.post(
   "/signup",
   asyncHandler(async (req, res) => {
-    console.log("Received Data:", req.body); // 🔍 Log incoming request
+    console.log("Received Data:", req.body);
 
     const { 
       name, 
@@ -40,9 +40,7 @@ router.post(
       res.status(400);
       throw new Error("User already exists");
     }
-    console.log("Received password:", password);
 
-    
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -54,7 +52,7 @@ router.post(
         password: hashedPassword,
         expertise: expertise && typeof expertise === "string" 
           ? expertise.split(",").map(skill => skill.trim()) 
-          : [], // Convert only if it's a string
+          : [],
         experience,
         about,
         videoLink,
@@ -67,13 +65,13 @@ router.post(
         password: hashedPassword,
         interests: interests && typeof interests === "string" 
           ? interests.split(",").map(field => field.trim()) 
-          : [], // Convert only if it's a string
+          : [],
         about,
         profilePic,
       });
     }
 
-    console.log("Stored Data:", newUser); // 🔍 Log stored user
+    console.log("Stored Data:", newUser);
 
     if (newUser) {
       res.status(201).json({
@@ -82,8 +80,9 @@ router.post(
         email: newUser.email,
         role,
         about: newUser.about,
-        interests: newUser.interests || [], 
+        interests: newUser.interests || [],
         expertise: newUser.expertise || [],
+        experience: newUser.experience || 0,
         videoLink: newUser.videoLink || "",
         profilePic: newUser.profilePic,
         token: generateToken(newUser.id, role),
@@ -95,8 +94,6 @@ router.post(
   })
 );
 
-
-
 // User/Mentor Login
 router.post(
   "/login",
@@ -105,33 +102,40 @@ router.post(
 
     const user = await User.findOne({ email });
     const mentor = await Mentor.findOne({ email });
-    console.log("User:", user);
-    console.log("Mentor:", mentor);
-    // const account = user || mentor;
-    let account;
-    if(user){
-      account = user;
-    }else{
-      account = mentor;
+
+    let account = user || mentor; 
+
+    if (!account) {
+      res.status(401);
+      throw new Error("Invalid email or password");
     }
-    console.log("Received password:", password);
-console.log("Account:", account);
-console.log("Account Password:", account.password);
-if (!account.password) {
-  return res.status(400).json({ message: "Password not found in DB" });}
-    if (account && (await bcrypt.compare(password, account.password))) {
+
+    if (!account.password) {
+      return res.status(400).json({ message: "Password not found in DB" });
+    }
+
+    if (await bcrypt.compare(password, account.password)) {
+      // Create response object
       const response = {
         _id: account.id,
         name: account.name,
         email: account.email,
         role: user ? "student" : "mentor",
-        about: account.about,
-        profilePic: account.profilePic, // Include profile picture in response
+        about: account.about || "",
+        profilePic: account.profilePic || "",
         token: generateToken(account.id, user ? "student" : "mentor"),
       };
 
+      // Include `interests` for students
+      if (user) {
+        response.interests = user.interests || [];
+      }
+
+      // Include `expertise` & `experience` for mentors
       if (mentor) {
-        response.videoLink = mentor.videoLink || ""; // Include videoLink for mentors
+        response.expertise = mentor.expertise || [];
+        response.experience = mentor.experience || 0;
+        response.videoLink = mentor.videoLink || "";
       }
 
       res.json(response);
@@ -155,7 +159,7 @@ router.get(
       interests: req.user.interests || [],
       expertise: req.user.expertise || [],
       about: req.user.about || "",
-      profilePic: req.user.profilePic || "", // Include profile picture in profile response
+      profilePic: req.user.profilePic || "",
     });
   })
 );

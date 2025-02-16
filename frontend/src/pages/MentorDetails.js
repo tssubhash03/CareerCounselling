@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Container, Card, Button, Spinner, Row, Col, Form } from "react-bootstrap";
 import { motion } from "framer-motion";
-
+import { Briefcase } from "lucide-react";
 const MentorDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -137,9 +137,59 @@ const MentorDetails = () => {
                   <Card.Subtitle className="mb-2 text-muted">{mentor.specialization}</Card.Subtitle>
                   <Card.Text>
                     <strong>Email:</strong> {mentor.email} <br />
-                    <strong>Experience:</strong> {mentor.experience} years <br />
-                    <strong>About:</strong> {mentor.about} <br />
-                    <strong>Expertise:</strong> {mentor.expertise}
+                    {mentor.experience && (
+              <div style={{
+                marginTop: "10px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "6px 12px",
+                backgroundColor: "#e3f2fd", // Light blue background
+                color: "#0d47a1", // Dark blue text
+                fontWeight: "bold",
+                fontSize: "1rem",
+                borderRadius: "8px",
+                width: "fit-content",
+              }}>
+                <Briefcase size={20} /> {/* Work/Experience icon */}
+                {mentor.experience} Years of Experience
+              </div>
+            )} <br />
+                    {mentor.about && (
+                  <div
+                    style={{
+                      backgroundColor: "#f0f0f0", // Light grey background
+                      padding: "10px",
+                      borderRadius: "10px", // Rounded corners
+                      fontSize: "1.1rem",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <strong>About:</strong> {mentor.about}
+                  </div>
+                )}<br />
+                    {mentor.expertise && mentor.expertise.length > 0 && (
+              <div style={{ 
+                display: "grid", 
+                gridTemplateColumns: "repeat(2, auto)", // Ensures two items per row
+                gap: "8px" 
+              }}>
+                {mentor.expertise.map((skill, index) => (
+                  <div key={index} style={{
+                    marginTop: "8px",
+                    border: "2px solid lightblue",
+                    padding: "5px 12px",
+                    borderRadius: "8px",
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    backgroundColor: "#f0f8ff",
+                    textAlign: "center"
+                  }}>
+                    {skill}
+                  </div>
+                ))}
+              </div>
+            )}
                   </Card.Text>
                   <Button variant="primary" href={`mailto:${mentor.email}?subject=Inquiry%20About%20Mentoring`}>
                     Contact Mentor
