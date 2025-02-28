@@ -118,34 +118,6 @@ const AuthModal = ({ show, handleClose }) => {
                       required
                     />
                   </Form.Group>
-
-                  {/* Conditionally render based on role */}
-                  {formData.role === "student" ? (
-                    <Form.Group className="mb-3">
-                      <Form.Label>Interested Field</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="interestedField"
-                        placeholder="Enter your field of interest"
-                        value={formData.interestedField}
-                        onChange={handleChange}
-                        required
-                      />
-                    </Form.Group>
-                  ) : (
-                    <Form.Group className="mb-3">
-                      <Form.Label>Expertise</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="expertise"
-                        placeholder="Enter your field of expertise"
-                        value={formData.expertise}
-                        onChange={handleChange}
-                        required
-                      />
-                    </Form.Group>
-                  )}
-
                   <Form.Group className="mb-3">
                     <Form.Label>Role</Form.Label>
                     <Form.Select
@@ -158,6 +130,35 @@ const AuthModal = ({ show, handleClose }) => {
                       <option value="mentor">Mentor</option>
                     </Form.Select>
                   </Form.Group>
+                  
+                  {/* Conditionally render based on role */}
+                  {formData.role === "student" ? (
+                    <Form.Group className="mb-3">
+                      <Form.Label>Interested Field(Separate with ,)</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="interestedField"
+                        placeholder="Enter your field of interest"
+                        value={formData.interestedField}
+                        onChange={handleChange}
+                        required
+                      />
+                    </Form.Group>
+                  ) : (
+                    <Form.Group className="mb-3">
+                      <Form.Label>Expertise(Separate with ,)</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="expertise"
+                        placeholder="Enter your field of expertise"
+                        value={formData.expertise}
+                        onChange={handleChange}
+                        required
+                      />
+                    </Form.Group>
+                  )}
+
+                  
 
                   {/* About Field */}
                   <Form.Group className="mb-3">

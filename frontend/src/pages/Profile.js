@@ -110,6 +110,23 @@ const Profile = () => {
   };
   return (
     <div style={{ fontFamily: "'Ubuntu', sans-serif",backgroundColor: "#6C63FF", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      {/* Display the SVG background when no user is logged in */}
+      {user === null && (
+        <div
+          style={{
+            position: "absolute",
+            top: "0",
+            left: "0",
+            width: "100%",
+            height: "100%",
+            zIndex: "-1", // Position the SVG behind the modal
+            backgroundImage: 'url("images/undraw_access-denied_krem.png")',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+             // Adjust the opacity as needed
+          }}
+        />
+      )}
       <Container className="d-flex justify-content-center">
         {user ? (
           <motion.div

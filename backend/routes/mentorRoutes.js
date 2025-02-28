@@ -18,6 +18,9 @@ router.get("/all", async (req, res) => {
 });
 
 router.get("/recommend", protect, asyncHandler(async (req, res) => {
+  console.log("User", req.user);
+  console.log("User role:", req.headers.role);
+  console.log("User interests:", req.user.interests);
   if (!req.user.interests || req.user.interests.length === 0) {
     res.status(400);
     throw new Error("No interests found. Please update your profile.");

@@ -6,10 +6,14 @@ const MentorRecommendation = () => {
   const [mentors, setMentors] = useState([]);
 
   useEffect(() => {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const token = userInfo?.token; // Safely access token
+
     fetch("http://localhost:5000/api/mentors/recommend", {
       method: "GET",
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      headers: { Authorization: `Bearer ${token}` },
     })
+
       .then((response) => response.json())
       .then((data) => setMentors(data))
       .catch((error) => console.error("Error fetching mentors:", error));
