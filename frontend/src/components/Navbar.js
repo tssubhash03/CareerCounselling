@@ -6,6 +6,15 @@ const Navbar = () => {
   const location = useLocation(); // Get current page route
   const [activePage, setActivePage] = useState(location.pathname);
 
+  //Load user info from localStorage on mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem("userInfo");
+    if (storedUser) {
+      setUserInfo(JSON.parse(storedUser)); // Parse stored JSON data
+    }
+  }, []);
+
+
   useEffect(() => {
     setActivePage(location.pathname); // Update active page on route change
   }, [location.pathname]);

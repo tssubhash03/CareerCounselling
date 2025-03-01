@@ -45,7 +45,7 @@ const MentorList = () => {
                     overflow: "hidden",
                     position: "relative",
                     cursor: "pointer",
-                    transition: "transform 0.3s ease-in-out",
+                    transition: "transform 0.2s ease-in-out",
                   }}
                   whileHover={{ scale: 1.05 }} // Pop-up effect on hover
                 >

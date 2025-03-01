@@ -6,7 +6,7 @@ const MentorRecommendation = () => {
   const [mentors, setMentors] = useState([]);
 
   useEffect(() => {
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));//JSON.parse() to convert string to object
     const token = userInfo?.token; // Safely access token
 
     fetch("http://localhost:5000/api/mentors/recommend", {

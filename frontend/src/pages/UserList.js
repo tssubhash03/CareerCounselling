@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+
 const UserList = () => {
   const [users, setUsers] = useState([]);
   const [role, setRole] = useState("");
@@ -10,14 +11,14 @@ const UserList = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        setRole(decodedToken?.role);
+        const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+        const token = userInfo?.token;
+        setRole(userInfo?.role);
 
         const response = await axios.get("http://localhost:5000/api/auth/users", {
           headers: {
             Authorization: `Bearer ${token}`,
-            Role: decodedToken?.role,
+            Role: userInfo?.role,
           },
         });
 
@@ -64,18 +65,18 @@ const UserList = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#6C63FF", // Purple background
+        backgroundColor: "#6C63FF",
         padding: "20px",
       }}
     >
       <motion.div
-          initial={{ opacity: 0, y: 50 }} // Starts invisible and slightly below
-          animate={{ opacity: 1, y: 0 }} // Moves to normal position
-          transition={{ duration: 0.6, ease: "easeOut" }} // Smooth transition
-        >
-          <h2 style={{ color: "white", marginBottom: "20px", marginLeft:"650px" }}>All Users</h2>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", justifyContent: "center" }}>
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        style={{ width: "100%", textAlign: "center", marginTop: "20px" }} // Properly centers the title
+      >
+        <h2 style={{ color: "white", marginBottom: "20px" }}>All Users</h2>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", justifyContent: "center", marginTop: "20px" }}>
         {users.map((user) => (
           <div
             key={user._id}
@@ -104,7 +105,7 @@ const UserList = () => {
           </div>
         ))}
       </div>
-        </motion.div>
+      </motion.div>
     </div>
   );
 };
