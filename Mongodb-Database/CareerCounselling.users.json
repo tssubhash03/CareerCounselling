@@ -1,0 +1,65 @@
+[{
+  "_id": {
+    "$oid": "67b4962b3d3a81becc4471f7"
+  },
+  "name": "Subhash",
+  "email": "subhash@example.com",
+  "password": "$2a$10$cacpmf2yRbE.DqTp4uepbOVfoAwBm30OBuYo/yxWrpjmPSZ3map7a",
+  "interests": [
+    "AI",
+    "Full Stack"
+  ],
+  "profilePic": "/uploads/1740759279470-7e4d7d2c-873c-4b88-bb92-442d476fa717.jpg",
+  "about": "HI ",
+  "isMentor": false,
+  "createdAt": {
+    "$date": "2025-02-18T14:16:11.282Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-28T16:14:39.490Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67b496673d3a81becc4471fb"
+  },
+  "name": "Dinesh ",
+  "email": "dineshm@gmail.com",
+  "password": "$2a$10$9vTbkniB1lIDXURwQb/C4uWng4OFco05i9yUcXGbTW2I8ovuejHy6",
+  "interests": [
+    "Full Stack",
+    "Java"
+  ],
+  "profilePic": "",
+  "about": "Hi ",
+  "isMentor": false,
+  "createdAt": {
+    "$date": "2025-02-18T14:17:11.642Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-18T14:17:11.642Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67b496973d3a81becc4471ff"
+  },
+  "name": "Rahul",
+  "email": "rahul@gmail.com",
+  "password": "$2a$10$USOMOZ19iaX.FZP2jOf94uxWaxjqHQwLKEyZWX5LPpd40aa.cyT7m",
+  "interests": [
+    "Python"
+  ],
+  "profilePic": "",
+  "about": "Hi",
+  "isMentor": false,
+  "createdAt": {
+    "$date": "2025-02-18T14:17:59.511Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-18T14:17:59.511Z"
+  },
+  "__v": 0
+}]

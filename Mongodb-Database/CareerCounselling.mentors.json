@@ -1,0 +1,205 @@
+[{
+  "_id": {
+    "$oid": "67c285e267fa63857fcf50ad"
+  },
+  "name": "Joma Tech",
+  "email": "jomatech@example.com",
+  "password": "$2a$10$W0MaZeb.tGgO65n3/UhdkesO98Rfl6NE.1R0qssqNtlZjoMj9ImYS",
+  "expertise": [
+    "Machine Learning",
+    "Data Science"
+  ],
+  "experience": 9,
+  "about": "I talk about life in Silicon Valley and at big tech companies.\nI have 2.33M subscribers,187,960,618 views in my youtube channel",
+  "profilePic": "/uploads/1740801793629-Joma_Tech.jpg",
+  "videoLink": "https://youtu.be/MfP-P8EHGBo?si=4sOqlctaKA2g51vZ",
+  "rating": 0,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c288ea67fa63857fcf50ba"
+  },
+  "name": "Tommy Christ",
+  "email": "tommychrist@example.com",
+  "password": "$2a$10$2aIAxjY7UUJ7/mHnLTRrKe0WJtM7CW/NNf8NEC.WNQNbvpBIM3plG",
+  "expertise": [
+    "Photographer",
+    "Video Editor",
+    "PremierePro"
+  ],
+  "experience": 5,
+  "about": "A passionate photographer and skilled video editor with expertise in Adobe Premiere Pro. Specializing in capturing stunning visuals and transforming raw footage into compelling stories, I bring creativity and technical precision to every project. With a keen eye for detail and a deep understanding of visual aesthetics, I ensure high-quality results that leave a lasting impact.",
+  "profilePic": "/uploads/1740802291392-Tommy_Christ.jpg",
+  "videoLink": "https://youtu.be/hcRAmHFS46w?si=zNLsUYGVeV5o1laT",
+  "rating": 0,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c289aa67fa63857fcf50c5"
+  },
+  "name": "Epaphra",
+  "email": "epaphra@example.com",
+  "password": "$2a$10$6V0oTO9uPYQXMWzXCfl//u7HeP1cfxQlgXv1ADZidJ8wTkm9Elxg2",
+  "expertise": [
+    "Storytelling",
+    "Video Editor",
+    "Software Engineer"
+  ],
+  "experience": 2,
+  "about": "A passionate storyteller, video editor, and software engineer, blending creativity with technology to craft compelling narratives. With expertise in Adobe Premiere Pro, I bring visual stories to life through seamless editing and dynamic compositions. As a software engineer, I leverage my technical skills to build innovative solutions, merging code with creativity to enhance digital experiences. Whether through film, code, or design, my goal is to engage, inspire, and innovate.",
+  "profilePic": "/uploads/1740802480613-Epaphra.jpeg",
+  "videoLink": "https://youtu.be/VEz0KWURvPk?si=Qg8G5FaWBHRUOxJf",
+  "rating": 0,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c28b5067fa63857fcf50de"
+  },
+  "name": "Lewis",
+  "email": "lewis@example.com",
+  "password": "$2a$10$JrMy8gOvurDaEluLWu8mM.Khnc206nHht7sognCp5aNQTtFnfYJP2",
+  "expertise": [
+    "Software Engineer",
+    "AI",
+    "Machine Learning",
+    "Blockchain"
+  ],
+  "experience": 5,
+  "about": "A passionate Software Engineer with expertise in Artificial Intelligence, Machine Learning, and Blockchain. Skilled in developing intelligent systems, optimizing algorithms, and creating decentralized applications. With a strong foundation in software development and problem-solving, I thrive at the intersection of innovation and technology, continuously exploring cutting-edge advancements to build impactful solutions.",
+  "profilePic": "/uploads/1740802903565-Lewis.jpeg",
+  "videoLink": "https://youtu.be/Hb9LBqnXKvo?si=hUFnq5cfbjgH9Awc",
+  "rating": 0,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c28c3367fa63857fcf50ed"
+  },
+  "name": "Tesuko",
+  "email": "tesuko@example.com",
+  "password": "$2a$10$d6xYRFNfhutQ5nUzjYdUPeFrmfRCb.Vm1XwVsBEcFzpYu8zv9kx.G",
+  "expertise": [
+    "Java",
+    "SpringBoot",
+    "Docker",
+    "AI",
+    "MySQL"
+  ],
+  "experience": 10,
+  "about": "Passionate and skilled Software Engineer specializing in Java, Spring Boot, and MySQL, with extensive experience in AI, Machine Learning, and Blockchain. Proficient in building scalable backend applications, containerizing deployments using Docker, and integrating AI-driven solutions into enterprise systems. A dedicated problem solver with a strong foundation in software architecture, database management, and cloud technologies. Additionally, an experienced storyteller and video editor, adept at crafting compelling narratives using Adobe Premiere Pro.",
+  "profilePic": "/uploads/1740803132660-Tesuko.png",
+  "videoLink": "https://youtu.be/bm0OyhwFDuY?si=pP7fWc_CJP_t2K1d",
+  "rating": 0,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c28d1267fa63857fcf50f8"
+  },
+  "name": "Sharmilan Vipokan",
+  "email": "sharmilan@example.com",
+  "password": "$2a$10$qtffh7Lfi4sRnACARjJLnOL0KnD1nRAiMm1qcAwkvoY3m0wNPEz8u",
+  "expertise": [
+    "Interview Guidance",
+    "Python",
+    "MongoDb",
+    "Flask"
+  ],
+  "experience": 4,
+  "about": "A highly skilled software engineer with expertise in Python, MongoDB, and Flask, passionate about building scalable web applications and RESTful APIs. Experienced in designing and optimizing NoSQL databases, implementing microservices, and integrating AI/ML solutions into backend systems. Adept at Dockerizing applications, ensuring seamless deployment, and maintaining high-performance architectures. Currently preparing for technical interviews, focusing on problem-solving, system design, and best practices in backend development.",
+  "profilePic": "/uploads/1740803388890-Sharmilan_Vipokan.jpeg",
+  "videoLink": "https://youtu.be/ZRcGGtpqIJk?si=xN6jOH9SUY7D8htS",
+  "rating": 0,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c28df967fa63857fcf5103"
+  },
+  "name": "Provoking Pages",
+  "email": "provoking@example.com",
+  "password": "$2a$10$kmg7yFH8bJp41fEgveale.IVE9kYabpmk2C51wBTgmhqYkMwXlbam",
+  "expertise": [
+    "Communication",
+    "Story Telling",
+    "Software developer"
+  ],
+  "experience": 2,
+  "about": "You are a skilled communicator, storyteller, and software developer with a unique ability to blend creativity with technology. Your passion for storytelling allows you to craft engaging narratives, whether through words, visuals, or digital experiences. As a video editor proficient in Adobe Premiere Pro, you bring stories to life, making complex ideas accessible and compelling.",
+  "profilePic": "/uploads/1740803591406-ProvokingPages.jpeg",
+  "videoLink": "https://youtu.be/1A4fuO-z6kw?si=1tVOWC10q2Ug9i7F",
+  "rating": 0,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c28f1867fa63857fcf5110"
+  },
+  "name": "Pooja Dutt",
+  "email": "poojadutt@example.com",
+  "password": "$2a$10$phVYbGL3iy1gqduR4F1Ip.X3BE4/2DhPCUIACSfWlPXj6ieRUQVUG",
+  "expertise": [
+    "Software Engineer",
+    "Communication",
+    "Story telling"
+  ],
+  "experience": 5,
+  "about": "A passionate Software Engineer with a knack for solving complex problems through innovative solutions. With strong communication skills, I excel at bridging the gap between technical and non-technical stakeholders, ensuring seamless collaboration. Beyond coding, I love storytelling, whether it's simplifying intricate concepts for a broader audience or crafting engaging narratives that bring ideas to life. Always eager to learn, adapt, and create meaningful impact through technology and communication.",
+  "profilePic": "/uploads/1740803872352-PoojaDutt.jpg",
+  "videoLink": "https://youtu.be/QkMP-MR1Tng?si=O5UCQn192gnCtlxO",
+  "rating": 0,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c28fa767fa63857fcf511b"
+  },
+  "name": "Navin HR",
+  "email": "navinhr@example.com",
+  "password": "$2a$10$7UhVm6oTMLiawEHnxvXCredeEju184bnFeNoQiFLbkz6ACeIlgcna",
+  "expertise": [
+    "HR",
+    "Interviewer",
+    "Manager",
+    "Communication"
+  ],
+  "experience": 7,
+  "about": "A dynamic HR professional, Interviewer, and Manager with a strong passion for people and organizational growth. Skilled in communication, I excel at building connections, conducting insightful interviews, and fostering a positive workplace culture. With a keen eye for talent and leadership, I drive team success through strategic hiring, effective management, and continuous employee development. Dedicated to creating an engaging and productive work environment where individuals and businesses thrive. 🔥",
+  "profilePic": "/uploads/1740804017691-Navin.jpeg",
+  "videoLink": "https://youtu.be/aFXGQFlOpfU?si=YhQN-_XXKgmfspxa",
+  "rating": 0,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c2905167fa63857fcf5126"
+  },
+  "name": "LMES",
+  "email": "lmes@example.com",
+  "password": "$2a$10$lMBYpd.bdqwndVieRjuOgOf6o5c6hkVwUaHsYuIvchAOcsipvrx0q",
+  "expertise": [
+    "Science",
+    "Engineering",
+    "Mathematics",
+    "Career guidance"
+  ],
+  "experience": 10,
+  "about": "A dedicated professional with a strong foundation in Science, Engineering, and Mathematics, passionate about problem-solving and innovation. With a deep understanding of these fields, I excel at providing career guidance, helping individuals navigate their paths and make informed decisions. Whether it's simplifying complex concepts, mentoring aspiring professionals, or exploring the latest advancements, I am committed to inspiring growth and success in STEM careers. 🚀",
+  "profilePic": "/uploads/1740804189081-lmes_academy_logo.jpeg",
+  "videoLink": "https://youtu.be/wderWRm1cxE?si=lNoW16Q4SQ2CdNUX",
+  "rating": 0,
+  "reviews": [],
+  "__v": 0
+}]
